@@ -1,0 +1,11 @@
+@import '#/_styles.scss';
+
+.notes-groups {
+    display       : flex;
+    flex-grow     : 1;
+    flex-direction: column;
+    gap           : $gap-8px;
+    padding       : $padding-8px;
+    overflow-y    : auto;
+    border        : $border-2px-grey;
+}

@@ -1,0 +1,19 @@
+@import '#/_styles.scss';
+
+.button {
+    padding    : $padding-8px $padding-16px;
+    font-family: $font-family-arial;
+}
+
+.grey-0 {
+    background-color: $grey-0;
+}
+
+.grey-80 {
+    background-color: $grey-80;
+    color           : $white;
+}
+
+.white {
+    background-color: $white;
+}

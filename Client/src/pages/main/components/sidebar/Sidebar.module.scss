@@ -1,0 +1,8 @@
+@import '#/_styles.scss';
+
+.sidebar {
+    display       : flex;
+    flex-direction: column;
+    gap           : $gap-16px;
+    padding       : $padding-16px;
+}
