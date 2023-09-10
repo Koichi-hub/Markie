@@ -6,6 +6,9 @@
     flex-direction: column;
     gap           : $gap-8px;
     padding       : $padding-8px;
-    overflow-y    : auto;
     border        : $border-2px-grey;
+    min-height    : 0;
+    overflow-y    : auto;
+
+    @include scrollbar;
 }
