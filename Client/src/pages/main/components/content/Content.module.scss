@@ -1,8 +1,15 @@
 @import '#/_styles.scss';
 
 .content {
-    background: $grey-0;
-    height    : inherit;
+    background    : $grey-0;
+    height        : inherit;
+    display       : flex;
+    flex-direction: column;
+}
+
+.tag-title {
+    padding         : $padding-16px;
+    background-color: $white;
 }
 
 .notes-cards-list {

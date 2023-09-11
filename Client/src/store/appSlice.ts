@@ -3,7 +3,7 @@ import { User } from '../models/user';
 
 // state
 export type AppState = {
-  user: User;
+  user?: User | null;
 };
 
 const initialState: AppState = {

@@ -4,4 +4,9 @@
     display: inline-block;
     width  : $icon-width-30px;
     height : $icon-height-30px;
+
+    &:hover {
+        background-color: $white;
+        border-radius   : $icon-width-30px;
+    }
 }

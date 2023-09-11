@@ -6,9 +6,12 @@
     align-items    : center;
     padding        : $padding-16px;
     background     : $grey-0;
+    cursor         : pointer;
 }
 
-.text {}
+.text {
+    cursor: auto;
+}
 
 .right-part {
     display    : flex;
