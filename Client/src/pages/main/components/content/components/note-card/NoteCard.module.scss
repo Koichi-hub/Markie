@@ -3,4 +3,45 @@
 .note-card {
     background-color: $white;
     height          : 450px;
+    padding-left    : 20px;
+    padding-right   : 20px;
+    padding-top     : 20px;
+
+    &-icons {
+        text-align: end;
+
+        &-edit {
+            width       : 30px;
+            height      : 30px;
+            margin-right: 16px;
+        }
+
+        &-bookmark {
+            width       : 30px;
+            height      : 30px;
+            margin-right: 16px;
+        }
+
+        &-delete {
+            width : 30px;
+            height: 30px;
+        }
+    }
+
+    &-main {
+        display        : flex;
+        flex-direction : column;
+        height         : 90%;
+        justify-content: space-between;
+        padding-top    : 25px;
+
+        &-title {}
+
+        &-dates {
+            &-before {}
+
+            &-after {}
+        }
+    }
+
 }
