@@ -1,33 +1,45 @@
+import dayjs from 'dayjs';
+import { Note } from '../../../../../../models/note';
 import styles from './NoteCard.module.scss';
+import { IconButton } from './components/icon-button';
+import { useMemo } from 'react';
 
-export const NoteCard = () => {
+type Props = {
+  note: Note;
+};
+
+export const NoteCard = ({ note }: Props) => {
+  const updatedAt = useMemo(() => {
+    if (!note.updated_at) return 'дата отсутствует';
+    return dayjs(note.updated_at).format('DD/MM/YYYY');
+  }, [note.updated_at]);
+
+  const createdAt = useMemo(() => {
+    if (!note.created_at) return 'дата отсутствует';
+    return dayjs(note.created_at).format('DD/MM/YYYY');
+  }, [note.created_at]);
+
   return (
     <div className={styles['note-card']}>
-      <div className={styles['note-card-icons']}>
-        <img
-          className={styles['note-card-icons-edit']}
-          src="public\assets\icons\edit.svg"
-          alt="edit"
-        />
-        <img
-          className={styles['note-card-icons-bookmark']}
-          src="public\assets\icons\bookmark.svg"
-          alt="edit"
-        />
-        <img
-          className={styles['note-card-icons-delete']}
-          src="public\assets\icons\delete.svg"
-          alt="edit"
-        />
+      <div className={styles['note-card-top']}>
+        <div className={styles['buttons']}>
+          <IconButton src="assets/icons/edit.svg" />
+          <IconButton src="assets/icons/bookmark.svg" />
+          <IconButton src="assets/icons/delete.svg" />
+        </div>
+        <div className={styles['title']}>
+          {note?.title ?? 'название отсутствует'}
+        </div>
       </div>
-      <div className={styles['note-card-main']}>
-        <div className={styles['note-card-main-title']}>Название заметки</div>
-        <div className={styles['note-card-main-dates']}>
-          <div className={styles['note-card-main-dates-before']}>
-            дата изменения: 20.05.2003
+      <div className={styles['note-card-bottom']}>
+        <div className={styles['date']}>
+          <div className={styles['date-item']}>
+            <span>Дата изменения:</span>
+            <span>{updatedAt}</span>
           </div>
-          <div className={styles['note-card-main-dates-after']}>
-            дата создания: 11.09.2001
+          <div className={styles['date-item']}>
+            <span>Дата создания:</span>
+            <span>{createdAt}</span>
           </div>
         </div>
       </div>

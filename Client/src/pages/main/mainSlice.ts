@@ -16,7 +16,14 @@ export type MainState = {
 
 const initialState: MainState = {
   tag: { title: 'Тэг какого-то ноунейма' } as Tag,
-  notes: [],
+  notes: [
+    {
+      tag: {} as Tag,
+      created_at: new Date(),
+      updated_at: new Date(),
+      title: 'LoL oMg',
+    },
+  ],
   tagsNotesAmount: [
     {
       tag: { title: 'Экзистенциальные проблемы' } as Tag,
