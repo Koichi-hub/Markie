@@ -3,8 +3,8 @@ import { Note } from '../../models/note';
 import { Tag } from '../../models/tag';
 
 export type TagsNotesAmount = {
-  tag: Tag;
-  notesAmount: number;
+  tag?: Tag;
+  notesAmount?: number;
 };
 
 // state
@@ -18,6 +18,7 @@ const initialState: MainState = {
   tag: { title: 'Тэг какого-то ноунейма' } as Tag,
   notes: [
     {
+      guid: '1234thisisguid',
       tag: {} as Tag,
       created_at: new Date(),
       updated_at: new Date(),

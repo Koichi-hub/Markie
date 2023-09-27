@@ -1,3 +1,3 @@
 export type Tag = {
-  title: string;
+  title?: string;
 };

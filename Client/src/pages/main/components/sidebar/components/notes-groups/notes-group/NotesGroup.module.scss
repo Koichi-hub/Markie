@@ -10,7 +10,10 @@
 }
 
 .text {
-    cursor: auto;
+    white-space  : nowrap;
+    overflow     : hidden;
+    text-overflow: ellipsis;
+    cursor       : auto;
 }
 
 .right-part {

@@ -6,6 +6,7 @@ import { Main } from './pages/main';
 import { Auth } from './pages/auth';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import { Note } from './pages/note';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,16 @@ const router = createBrowserRouter([
   {
     path: '/main',
     element: <Main />,
+  },
+  {
+    path: '/note',
+    element: <Note />,
+    children: [
+      {
+        path: '/note/:noteGuid',
+        element: <Note />,
+      },
+    ],
   },
   {
     path: '/auth',

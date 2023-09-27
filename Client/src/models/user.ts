@@ -1,4 +1,4 @@
 export type User = {
-  picture: string | null;
-  username: string;
+  picture?: string | null;
+  username?: string;
 };
