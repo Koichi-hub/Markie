@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { NotesGroup } from './notes-group';
-import styles from './NotesGroups.module.scss';
+import { TagItem } from './tag-item';
+import styles from './TagsList.module.scss';
 import { RootState } from '../../../../../../store';
 import { useCallback, useMemo } from 'react';
 import { setTag } from '../../../../mainSlice';
 import { Tag } from '../../../../../../models/tag';
 
-export const NotesGroups = () => {
+export const TagsList = () => {
   const dispatch = useDispatch();
   const tagsNotesAmount = useSelector(
     (state: RootState) => state.main.tagsNotesAmount
@@ -20,7 +20,7 @@ export const NotesGroups = () => {
   const renderNotes = useMemo(
     () =>
       tagsNotesAmount?.map((tagNotesAmount, index) => (
-        <NotesGroup
+        <TagItem
           key={index}
           tagNotesAmount={tagNotesAmount}
           onSelectTag={onSelectTag}

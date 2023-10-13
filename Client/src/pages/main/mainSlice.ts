@@ -12,6 +12,8 @@ export type MainState = {
   tag?: Tag | null;
   notes?: Note[] | null;
   tagsNotesAmount?: TagsNotesAmount[] | null;
+  openAddTagToast?: boolean;
+  openAddNoteToast?: boolean;
 };
 
 const initialState: MainState = {
@@ -35,6 +37,8 @@ const initialState: MainState = {
       notesAmount: 999,
     },
   ],
+  openAddTagToast: false,
+  openAddNoteToast: false,
 };
 
 // reducers
@@ -63,6 +67,15 @@ export const mainSlice = createSlice({
     resetTagsNotesAmount: state => {
       state.tagsNotesAmount = [];
     },
+    setOpenAddTagToast: (state, { payload }: PayloadAction<boolean>) => {
+      state.openAddTagToast = payload;
+    },
+    toggleOpenAddTagToast: state => {
+      state.openAddTagToast = !state.openAddTagToast;
+    },
+    setOpenAddNoteToast: (state, { payload }: PayloadAction<boolean>) => {
+      state.openAddNoteToast = payload;
+    },
   },
 });
 
@@ -74,6 +87,9 @@ export const {
   resetTag,
   setTagsNotesAmount,
   resetTagsNotesAmount,
+  setOpenAddTagToast,
+  toggleOpenAddTagToast,
+  setOpenAddNoteToast,
 } = mainSlice.actions;
 
 export default mainSlice.reducer;

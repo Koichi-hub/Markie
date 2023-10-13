@@ -12,14 +12,14 @@ const colorClass = {
 } as ColorClass;
 
 type Props = {
-  text: string;
-  color: Color;
-  onClick: () => void;
+  text?: string;
+  color?: Color;
+  onClick?: () => void;
 };
 
 export const Button = ({ text, color, onClick }: Props) => {
   const className = useMemo(
-    () => [styles.button, colorClass[color]].join(' '),
+    () => [styles.button, color ? colorClass[color] : ''].join(' '),
     [color]
   );
 

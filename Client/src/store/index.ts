@@ -10,6 +10,10 @@ export const store = configureStore({
     app: appReducer,
     main: mainReducer,
   },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

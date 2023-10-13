@@ -25,8 +25,6 @@ export const NoteCard = ({ note, onClick }: Props) => {
       <div className={styles['note-card-top']}>
         <div className={styles['buttons']}>
           <IconButton src="assets/icons/edit.svg" />
-          <IconButton src="assets/icons/bookmark.svg" />
-          <IconButton src="assets/icons/delete.svg" />
         </div>
         <div className={styles['title']}>
           {note?.title ?? 'название отсутствует'}

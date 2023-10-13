@@ -1,0 +1,32 @@
+@import '#/_styles.scss';
+
+.container {
+    display       : flex;
+    flex-direction: column;
+    gap           : $gap-16px;
+    padding       : 20px;
+}
+
+.title {
+    padding    : $padding-8px;
+    white-space: nowrap;
+    width      : 160px;
+}
+
+.input {
+    border       : 2px solid $grey-80;
+    border-radius: 15px;
+    padding      : 0 8px;
+}
+
+.controls {
+    display: flex;
+    gap    : $gap-4px;
+}
+
+.tags {
+    display: flex;
+    gap    : $gap-4px;
+
+    &__list {}
+}

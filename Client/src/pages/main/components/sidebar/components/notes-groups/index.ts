@@ -1,1 +1,0 @@
-export { NotesGroups } from './NotesGroups';
