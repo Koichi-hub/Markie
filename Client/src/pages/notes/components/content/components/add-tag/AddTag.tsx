@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { Button } from '../../../button';
 import styles from './AddTag.module.scss';
 import { useDispatch } from 'react-redux';
-import { setOpenAddTagToast } from '../../../../mainSlice';
+import { setOpenAddTagToast } from '../../../../notesSlice';
 
 export const AddTag = () => {
   const dispatch = useDispatch();

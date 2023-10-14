@@ -8,7 +8,7 @@ export type TagsNotesAmount = {
 };
 
 // state
-export type MainState = {
+export type NotesState = {
   tag?: Tag | null;
   notes?: Note[] | null;
   tagsNotesAmount?: TagsNotesAmount[] | null;
@@ -16,7 +16,7 @@ export type MainState = {
   openAddNoteToast?: boolean;
 };
 
-const initialState: MainState = {
+const initialState: NotesState = {
   tag: { title: 'Тэг какого-то ноунейма' } as Tag,
   notes: [
     {
@@ -42,9 +42,9 @@ const initialState: MainState = {
 };
 
 // reducers
-export const mainSlice = createSlice({
+export const notesSlice = createSlice({
   initialState,
-  name: 'mainSlice',
+  name: 'notesSlice',
   reducers: {
     setTag: (state, { payload }: PayloadAction<Tag>) => {
       state.tag = payload;
@@ -90,6 +90,6 @@ export const {
   setOpenAddTagToast,
   toggleOpenAddTagToast,
   setOpenAddNoteToast,
-} = mainSlice.actions;
+} = notesSlice.actions;
 
-export default mainSlice.reducer;
+export default notesSlice.reducer;

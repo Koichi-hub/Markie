@@ -21,10 +21,10 @@ export const NoteCard = ({ note, onClick }: Props) => {
   }, [note.created_at]);
 
   return (
-    <div className={styles['note-card']} onClick={onClick}>
+    <div className={styles['note-card']}>
       <div className={styles['note-card-top']}>
         <div className={styles['buttons']}>
-          <IconButton src="assets/icons/edit.svg" />
+          <IconButton src="assets/icons/edit.svg" onClick={onClick} />
         </div>
         <div className={styles['title']}>
           {note?.title ?? 'название отсутствует'}

@@ -1,6 +1,9 @@
 import { useCallback } from 'react';
 import { Tag } from '../../../../../../../models/tag';
-import { TagsNotesAmount, setOpenAddNoteToast } from '../../../../../mainSlice';
+import {
+  TagsNotesAmount,
+  setOpenAddNoteToast,
+} from '../../../../../notesSlice';
 import { IconButton } from '../../../../icon-button';
 import styles from './TagItem.module.scss';
 import { useDispatch } from 'react-redux';
@@ -29,7 +32,7 @@ export const TagItem = ({ tagNotesAmount, onSelectTag }: Props) => {
 
       <div className={styles['right-part']}>
         <span>{tagNotesAmount.notesAmount}</span>
-        <IconButton src="assets/icons/add.svg" onClick={onCreateNote} />
+        <IconButton src="/assets/icons/add.svg" onClick={onCreateNote} />
       </div>
     </div>
   );

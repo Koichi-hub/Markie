@@ -1,10 +1,10 @@
 import { Content } from './components/content';
 import { Sidebar } from './components/sidebar';
-import styles from './Main.module.scss';
+import styles from './Notes.module.scss';
 
-export const Main = () => {
+export const Notes = () => {
   return (
-    <div className={styles.main}>
+    <div className={styles.notes}>
       <Sidebar />
       <Content />
     </div>

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import appReducer from './appSlice';
-import mainReducer from '../pages/main/mainSlice';
+import notesSlice from '../pages/notes/notesSlice';
 
 // store состоит из reducer'ов
 // у reducer'ов есть state, который они изменяют через action'ы
@@ -8,7 +8,7 @@ import mainReducer from '../pages/main/mainSlice';
 export const store = configureStore({
   reducer: {
     app: appReducer,
-    main: mainReducer,
+    notes: notesSlice,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { Button } from '../../../button';
 import styles from './AddNote.module.scss';
 import { useDispatch } from 'react-redux';
-import { setOpenAddNoteToast } from '../../../../mainSlice';
+import { setOpenAddNoteToast } from '../../../../notesSlice';
 
 export const AddNote = () => {
   const dispatch = useDispatch();

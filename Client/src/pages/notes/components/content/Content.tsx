@@ -3,27 +3,29 @@ import styles from './Content.module.scss';
 import { NoteCard } from './components/note-card';
 import { RootState } from '../../../../store';
 import { useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Note } from '../../../../models/note';
 import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
-import { setOpenAddNoteToast, setOpenAddTagToast } from '../../mainSlice';
+import { setOpenAddNoteToast, setOpenAddTagToast } from '../../notesSlice';
 import { AddNote } from './components/add-note';
 import { routes } from '../../../../router';
+import { NoteEditor } from './components/note-editor';
 
 export const Content = () => {
   // hooks
+  const { noteGuid } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // selectors
-  const tag = useSelector((state: RootState) => state.main.tag);
-  const notes = useSelector((state: RootState) => state.main.notes);
+  const tag = useSelector((state: RootState) => state.notes.tag);
+  const notes = useSelector((state: RootState) => state.notes.notes);
   const openAddTagToast = useSelector(
-    (state: RootState) => state.main.openAddTagToast
+    (state: RootState) => state.notes.openAddTagToast
   );
   const openAddNoteToast = useSelector(
-    (state: RootState) => state.main.openAddNoteToast
+    (state: RootState) => state.notes.openAddNoteToast
   );
 
   // variables
@@ -41,10 +43,23 @@ export const Content = () => {
   // render
   const renderNotes = useMemo(
     () =>
-      notes?.map(note => (
-        <NoteCard key={note.guid} note={note} onClick={onClickNoteCard(note)} />
-      )),
-    [notes, onClickNoteCard]
+      !noteGuid && (
+        <div className={styles['notes-cards-list']}>
+          {notes?.map(note => (
+            <NoteCard
+              key={note.guid}
+              note={note}
+              onClick={onClickNoteCard(note)}
+            />
+          ))}
+        </div>
+      ),
+    [noteGuid, notes, onClickNoteCard]
+  );
+
+  const renderNoteEditor = useMemo(
+    () => noteGuid && <NoteEditor />,
+    [noteGuid]
   );
 
   const renderToast = useMemo(() => {
@@ -72,7 +87,8 @@ export const Content = () => {
   return (
     <div className={styles['content']}>
       <div className={styles['tag-title']}>{tag?.title}</div>
-      <div className={styles['notes-cards-list']}>{renderNotes}</div>
+      {renderNotes}
+      {renderNoteEditor}
       {renderToast}
     </div>
   );

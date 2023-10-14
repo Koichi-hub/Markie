@@ -1,13 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Welcome } from './pages/welcome';
-import { Main } from './pages/main';
-import { Note } from './pages/note';
 import { Auth } from './pages/auth';
+import { Notes } from './pages/notes';
 
 type Routes = {
   root: '';
   welcome: '/welcome';
-  main: '/main';
   notes: '/notes';
   auth: '/auth';
 };
@@ -15,7 +13,6 @@ type Routes = {
 export const routes: Routes = {
   root: '',
   welcome: '/welcome',
-  main: '/main',
   notes: '/notes',
   auth: '/auth',
 };
@@ -30,16 +27,12 @@ export const router = createBrowserRouter([
     element: <Welcome />,
   },
   {
-    path: routes.main,
-    element: <Main />,
-  },
-  {
     path: routes.notes,
-    element: <Note />,
+    element: <Notes />,
     children: [
       {
         path: `${routes.notes}/:noteGuid`,
-        element: <Note />,
+        element: <Notes />,
       },
     ],
   },

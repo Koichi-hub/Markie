@@ -3,13 +3,13 @@ import { TagItem } from './tag-item';
 import styles from './TagsList.module.scss';
 import { RootState } from '../../../../../../store';
 import { useCallback, useMemo } from 'react';
-import { setTag } from '../../../../mainSlice';
+import { setTag } from '../../../../notesSlice';
 import { Tag } from '../../../../../../models/tag';
 
 export const TagsList = () => {
   const dispatch = useDispatch();
   const tagsNotesAmount = useSelector(
-    (state: RootState) => state.main.tagsNotesAmount
+    (state: RootState) => state.notes.tagsNotesAmount
   );
 
   const onSelectTag = useCallback(

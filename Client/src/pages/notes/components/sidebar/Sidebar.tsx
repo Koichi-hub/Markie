@@ -3,7 +3,7 @@ import { Button } from '../button';
 import { TagsList } from './components/tags-list';
 import styles from './Sidebar.module.scss';
 import { RootState } from '../../../../store';
-import { toggleOpenAddTagToast } from '../../mainSlice';
+import { toggleOpenAddTagToast } from '../../notesSlice';
 
 export const Sidebar = () => {
   const dispatch = useDispatch();
