@@ -9,6 +9,7 @@ import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
 import { setOpenAddNoteToast, setOpenAddTagToast } from '../../mainSlice';
 import { AddNote } from './components/add-note';
+import { routes } from '../../../../router';
 
 export const Content = () => {
   // hooks
@@ -33,7 +34,7 @@ export const Content = () => {
 
   // events
   const onClickNoteCard = useCallback(
-    (note: Note) => () => navigate(`/note/${note.guid}`),
+    (note: Note) => () => navigate(`${routes.notes}/${note.guid}`),
     [navigate]
   );
 
