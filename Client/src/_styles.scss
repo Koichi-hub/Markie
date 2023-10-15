@@ -37,6 +37,10 @@ $icon-height-30px: 30px;
 $icon-width-20px : 20px;
 $icon-height-20px: 20px;
 
+// component properties variables
+
+$tag-title-height: 50px;
+
 // mixins
 @mixin scrollbar {
     &::-webkit-scrollbar {

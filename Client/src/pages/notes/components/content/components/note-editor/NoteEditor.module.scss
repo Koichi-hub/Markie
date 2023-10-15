@@ -1,4 +1,43 @@
-.container {
-    width : 100%;
+@import '#/_styles.scss';
+
+.note-editor {
+    display              : grid;
+    grid-template-columns: repeat(2, calc(50% - $gap-4px));
+    gap                  : $gap-4px;
+    width                : 100%;
+    height               : calc(100vh - $tag-title-height);
+    padding              : $padding-8px;
+}
+
+.src-text-container {
     height: 100%;
+    width : 100%;
+
+    .src-text {
+        height    : 100%;
+        width     : 100%;
+        padding   : 10px;
+        background: $white;
+        resize    : none;
+        border    : none;
+        outline   : none;
+    }
+}
+
+.markdown-container {
+    padding   : 10px;
+    background: $white;
+    height    : 100%;
+    width     : 100%;
+    overflow-y: auto;
+
+    .markdown {
+        all      : revert;
+        word-wrap: break-word;
+
+        * {
+            all       : revert;
+            margin-top: unset;
+        }
+    }
 }
