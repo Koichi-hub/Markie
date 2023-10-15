@@ -1,0 +1,61 @@
+@import '#/_styles.scss';
+
+.auth {
+    display       : flex;
+    flex-direction: column;
+    height        : 100vh;
+    width         : 100%;
+}
+
+.header {
+    display        : flex;
+    align-items    : center;
+    justify-content: flex-end;
+    padding        : 0 45px;
+    height         : $header-height;
+}
+
+.body {
+    display        : flex;
+    flex-grow      : 1;
+    align-items    : center;
+    justify-content: center;
+    background     : $grey-0;
+}
+
+.content {
+    display       : flex;
+    flex-direction: column;
+    gap           : $gap-16px;
+    padding       : 50px;
+    background    : $white;
+    user-select   : none;
+
+    &__text {
+        font-size  : 18px;
+        font-weight: 500;
+    }
+
+    &__options {
+        display        : flex;
+        justify-content: center;
+        gap            : $gap-16px;
+
+        &__item {
+            img {
+                width     : 35px;
+                height    : 35px;
+                transition: .3s;
+                cursor    : pointer;
+
+                &:hover {
+                    transform: scale(1.1);
+                }
+
+                &:active {
+                    transform: scale(1.2);
+                }
+            }
+        }
+    }
+}

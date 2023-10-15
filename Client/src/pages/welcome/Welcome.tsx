@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './Welcome.module.scss';
-import { Button } from './components/button';
+import { RoundendButton } from '../../components/rounded-button';
 
 export const Welcome = () => {
   const [activeAnimation, setActiveAnimation] = useState(false);
@@ -19,7 +19,7 @@ export const Welcome = () => {
   return (
     <div className={styles['welcome']}>
       <div className={styles['header']}>
-        <Button text="Авторизация" />
+        <RoundendButton text="Авторизация" />
       </div>
       <div className={styles['body']}>
         <div className={styles['content']}>

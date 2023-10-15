@@ -6,4 +6,9 @@
     border       : 2px solid $grey-80;
     font-size    : $font-size-14px;
     font-family  : $font-family-arial;
+
+    &_focus {
+        background: $grey-0;
+        border    : 2px solid $grey-0;
+    }
 }

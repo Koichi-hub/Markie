@@ -40,8 +40,8 @@
 .notes-cards-list {
     display              : grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-gap             : $gap-16px;
-    padding              : $padding-16px;
+    grid-gap             : $gap-8px;
+    padding              : $padding-8px;
     overflow             : auto;
     height               : inherit;
 
