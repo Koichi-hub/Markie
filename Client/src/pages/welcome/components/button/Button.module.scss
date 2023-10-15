@@ -1,0 +1,9 @@
+@import '#/_styles.scss';
+
+.button {
+    padding      : $padding-8px $padding-16px;
+    border-radius: 15px;
+    border       : 2px solid $grey-80;
+    font-size    : $font-size-14px;
+    font-family  : $font-family-arial;
+}
