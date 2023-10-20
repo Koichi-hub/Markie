@@ -1,9 +1,10 @@
 ﻿namespace Server.Entities
 {
-    public class OAuth : BaseEntity
+    public class Session : BaseEntity
     {
         public Guid UserGuid { get; set; }
         public User User { get; set; } = null!;
-        public List<Session> Sessions { get; set; } = new List<Session>();
+        public Guid OAuthGuid { get; set; }
+        public OAuth OAuth { get; set; } = null!;
     }
 }
