@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Database.Repositories;
 using Server.Services;
+using Server.Services.Interfaces;
 
 namespace Server
 {
@@ -20,6 +22,18 @@ namespace Server
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddAutoMapper(typeof(MappingProfile));
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<INoteRepository, NoteRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<IOAuthRepository, OAuthRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<INoteService, NoteService>();
+            services.AddScoped<ITagService, TagService>();
+            services.AddScoped<ISessionService, SessionService>();
+            services.AddScoped<IOAuthService, OAuthService>();
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)
