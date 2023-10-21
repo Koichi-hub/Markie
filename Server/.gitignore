@@ -227,3 +227,5 @@ AppPackages/
 
 [Bb]in/
 [Oo]bj/
+
+appsettings.Production.json
