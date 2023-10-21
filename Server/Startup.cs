@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Database;
+using Server.Services;
 
 namespace Server
 {
@@ -18,6 +19,7 @@ namespace Server
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddAutoMapper(typeof(MappingProfile));
         }
 
         public void Configure(WebApplication app, IWebHostEnvironment env)
