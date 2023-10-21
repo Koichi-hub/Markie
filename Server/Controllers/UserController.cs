@@ -6,7 +6,7 @@ using Server.Services.Dtos;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Server.Configuration;
 using Server.Database;
 using Server.Database.Repositories;
 using Server.Services;
@@ -17,10 +18,14 @@ namespace Server
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var oauthSettingsSection = Configuration.GetSection("OAuthSettings");
+            services.Configure<OAuthSettings>(oauthSettingsSection);
+
             services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddHttpClient();
             services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddScoped<IUserRepository, UserRepository>();
