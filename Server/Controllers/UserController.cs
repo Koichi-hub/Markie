@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Server.Core.Entities;
 using Server.Database;
-using Server.Entities;
 
 namespace Server.Controllers
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Server.Entities;
+using Server.Core.Entities;
 
 namespace Server.Database.EntityConfiguration
 {
