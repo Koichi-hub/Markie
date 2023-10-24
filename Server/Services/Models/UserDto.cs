@@ -1,6 +1,6 @@
 ﻿using Server.Core.Enums;
 
-namespace Server.Services.Dtos
+namespace Server.Services.Models
 {
     public class UserDto
     {

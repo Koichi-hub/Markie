@@ -1,4 +1,4 @@
-﻿namespace Server.Services.Dtos
+﻿namespace Server.Services.Models
 {
     public class OAuthDto
     {

@@ -16,6 +16,12 @@ namespace Server.Database.EntityConfiguration
                     v => Convert.ToInt32(v),
                     v => (OAuthServiceEnum)Enum.ToObject(typeof(OAuthServiceEnum), v)
                 );
+            builder
+                .HasIndex(o => o.Email)
+                .IsUnique();
+            builder
+                .HasIndex(o => o.Id)
+                .IsUnique();
         }
     }
 }
