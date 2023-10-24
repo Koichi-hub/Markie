@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Server.Controllers.Models
+namespace Server.Services.Models
 {
     public class GoogleAuthResponse
     {

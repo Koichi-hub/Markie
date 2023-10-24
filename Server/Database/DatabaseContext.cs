@@ -46,11 +46,11 @@ namespace Server.Database
 
             foreach (var entityEntry in entries)
             {
-                ((BaseEntity)entityEntry.Entity).UpdatedAt = DateTime.Now;
+                ((BaseEntity)entityEntry.Entity).UpdatedAt = DateTime.UtcNow;
 
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((BaseEntity)entityEntry.Entity).CreatedAt = DateTime.Now;
+                    ((BaseEntity)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
                 }
             }
 

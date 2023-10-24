@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Database;
-using Server.Services.Dtos;
+using Server.Services.Models;
 
 namespace Server.Controllers
 {

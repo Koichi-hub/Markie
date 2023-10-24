@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Server.Core.Entities;
-using Server.Services.Dtos;
+using Server.Services.Models;
 
 namespace Server.Services
 {
