@@ -46,7 +46,7 @@ namespace Server.Services
                     new KeyValuePair<string, string>("client_secret", google.ClientSecret),
                     new KeyValuePair<string, string>("code", code),
                     new KeyValuePair<string, string>("grant_type", google.GrantType),
-                    new KeyValuePair<string, string>("redirect_uri", _oauthSettings.RedirectUri)
+                    new KeyValuePair<string, string>("redirect_uri", google.RedirectUri)
                 })
             );
             if (!response.IsSuccessStatusCode) throw new HttpRequestException("google auth token request: failed");
@@ -135,7 +135,7 @@ namespace Server.Services
             {
                 { "client_id", vk.ClientId },
                 { "client_secret", vk.ClientSecret },
-                { "redirect_uri", _oauthSettings.RedirectUri },
+                { "redirect_uri", vk.RedirectUri },
                 { "code", code }
             };
             var response = await httpClient.GetAsync(
@@ -231,7 +231,7 @@ namespace Server.Services
             var parameters = new Dictionary<string, string?>()
             {
                 { "response_type", google.ResponseType },
-                { "redirect_uri", _oauthSettings.RedirectUri },
+                { "redirect_uri", google.RedirectUri },
                 { "client_id", google.ClientId },
                 { "access_type", google.AccessType },
                 { "scope", google.Scope },
@@ -248,7 +248,7 @@ namespace Server.Services
             var parameters = new Dictionary<string, string?>()
             {
                 { "client_id", vk.ClientId },
-                { "redirect_uri", _oauthSettings.RedirectUri },
+                { "redirect_uri", vk.RedirectUri },
                 { "display", vk.Display },
                 { "scope", vk.Scope },
                 { "response_type", vk.ResponseType }

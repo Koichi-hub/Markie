@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './Welcome.module.scss';
 import { RoundendButton } from '../../components/rounded-button';
+import { useNavigate } from 'react-router-dom';
+import { routes } from '../../router';
 
 export const Welcome = () => {
+  const navigate = useNavigate();
   const [activeAnimation, setActiveAnimation] = useState(false);
 
   const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -16,10 +19,15 @@ export const Welcome = () => {
     setActiveAnimation(true);
   };
 
+  const onClickAuthorization = useCallback(
+    () => navigate(routes.auth),
+    [navigate]
+  );
+
   return (
     <div className={styles['welcome']}>
       <div className={styles['header']}>
-        <RoundendButton text="Авторизация" />
+        <RoundendButton text="Авторизация" onClick={onClickAuthorization} />
       </div>
       <div className={styles['body']}>
         <div className={styles['content']}>

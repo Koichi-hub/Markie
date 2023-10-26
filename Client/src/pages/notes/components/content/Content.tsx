@@ -4,7 +4,7 @@ import { NoteCard } from './components/note-card';
 import { RootState } from '../../../../store';
 import { useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Note } from '../../../../models/note';
+import { NoteDto } from '../../../../models';
 import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
 import { setOpenAddNoteToast, setOpenAddTagToast } from '../../notesSlice';
@@ -36,7 +36,7 @@ export const Content = () => {
 
   // events
   const onClickNoteCard = useCallback(
-    (note: Note) => () => navigate(`${routes.notes}/${note.guid}`),
+    (note: NoteDto) => () => navigate(`${routes.notes}/${note.guid}`),
     [navigate]
   );
 
@@ -86,7 +86,7 @@ export const Content = () => {
 
   return (
     <div className={styles['content']}>
-      <div className={styles['tag-title']}>{tag?.title}</div>
+      <div className={styles['tag-title']}>{tag?.name}</div>
       {renderNotes}
       {renderNoteEditor}
       {renderToast}

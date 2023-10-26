@@ -228,4 +228,5 @@ AppPackages/
 [Bb]in/
 [Oo]bj/
 
+appsettings.Development.json
 appsettings.Production.json

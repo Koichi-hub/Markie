@@ -4,7 +4,7 @@ import styles from './TagsList.module.scss';
 import { RootState } from '../../../../../../store';
 import { useCallback, useMemo } from 'react';
 import { setTag } from '../../../../notesSlice';
-import { Tag } from '../../../../../../models/tag';
+import { TagDto } from '../../../../../../models';
 
 export const TagsList = () => {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export const TagsList = () => {
   );
 
   const onSelectTag = useCallback(
-    (tag: Tag) => dispatch(setTag(tag)),
+    (tag: TagDto) => dispatch(setTag(tag)),
     [dispatch]
   );
 

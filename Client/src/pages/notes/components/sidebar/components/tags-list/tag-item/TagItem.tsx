@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Tag } from '../../../../../../../models/tag';
+import { TagDto } from '../../../../../../../models';
 import {
   TagsNotesAmount,
   setOpenAddNoteToast,
@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 
 type Props = {
   tagNotesAmount: TagsNotesAmount;
-  onSelectTag: (tag: Tag) => void;
+  onSelectTag: (tag: TagDto) => void;
 };
 
 export const TagItem = ({ tagNotesAmount, onSelectTag }: Props) => {
@@ -28,7 +28,7 @@ export const TagItem = ({ tagNotesAmount, onSelectTag }: Props) => {
 
   return (
     <div className={styles['notes-group']} onClick={onSelect}>
-      <span className={styles['text']}>{tagNotesAmount.tag?.title}</span>
+      <span className={styles['text']}>{tagNotesAmount.tag?.name}</span>
 
       <div className={styles['right-part']}>
         <span>{tagNotesAmount.notesAmount}</span>

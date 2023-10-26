@@ -1,24 +1,19 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { User } from '../models/user';
+import { UserDto } from '../models';
 
 // state
 export type AppState = {
-  user?: User | null;
+  user?: UserDto | null;
 };
 
-const initialState: AppState = {
-  user: {
-    picture: null,
-    username: 'Joe Biden',
-  },
-};
+const initialState: AppState = {};
 
 // reducers
 export const appSlice = createSlice({
   name: 'appSlice',
   initialState,
   reducers: {
-    setUser: (state, { payload }: PayloadAction<User>) => {
+    setUser: (state, { payload }: PayloadAction<UserDto>) => {
       state.user = payload;
     },
   },

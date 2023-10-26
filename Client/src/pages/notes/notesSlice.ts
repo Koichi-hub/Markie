@@ -1,42 +1,21 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { Note } from '../../models/note';
-import { Tag } from '../../models/tag';
+import { NoteDto, TagDto } from '../../models';
 
 export type TagsNotesAmount = {
-  tag?: Tag;
+  tag?: TagDto;
   notesAmount?: number;
 };
 
 // state
 export type NotesState = {
-  tag?: Tag | null;
-  notes?: Note[] | null;
+  tag?: TagDto | null;
+  notes?: NoteDto[] | null;
   tagsNotesAmount?: TagsNotesAmount[] | null;
   openAddTagToast?: boolean;
   openAddNoteToast?: boolean;
 };
 
 const initialState: NotesState = {
-  tag: { title: 'Тэг какого-то ноунейма' } as Tag,
-  notes: [
-    {
-      guid: '1234thisisguid',
-      tag: {} as Tag,
-      created_at: new Date(),
-      updated_at: new Date(),
-      title: 'LoL oMg',
-    },
-  ],
-  tagsNotesAmount: [
-    {
-      tag: { title: 'Экзистенциальные проблемы' } as Tag,
-      notesAmount: 1,
-    },
-    {
-      tag: { title: 'Как правильно стрейфить в CS:GO' } as Tag,
-      notesAmount: 999,
-    },
-  ],
   openAddTagToast: false,
   openAddNoteToast: false,
 };
@@ -46,13 +25,13 @@ export const notesSlice = createSlice({
   initialState,
   name: 'notesSlice',
   reducers: {
-    setTag: (state, { payload }: PayloadAction<Tag>) => {
+    setTag: (state, { payload }: PayloadAction<TagDto>) => {
       state.tag = payload;
     },
     resetTag: state => {
       state.tag = null;
     },
-    setNotes: (state, { payload }: PayloadAction<Note[]>) => {
+    setNotes: (state, { payload }: PayloadAction<NoteDto[]>) => {
       state.notes = payload;
     },
     resetNotes: state => {

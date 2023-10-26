@@ -32,12 +32,16 @@ export const router = createBrowserRouter([
     children: [
       {
         path: `${routes.notes}/:noteGuid`,
-        element: <Notes />,
       },
     ],
   },
   {
     path: routes.auth,
     element: <Auth />,
+    children: [
+      {
+        path: `${routes.auth}/:variant`,
+      },
+    ],
   },
 ]);

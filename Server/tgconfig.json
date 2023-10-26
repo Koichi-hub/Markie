@@ -1,0 +1,10 @@
+{
+  "generationSpecs": [ "CustomGenerationSpec" ],
+  "buildProject": true,
+  "clearOutputDirectory": true,
+  "outputPath": "..\\Client\\src\\models",
+  "singleQuotes": true,
+  "tabLength": 2,
+  "createIndexFile": true,
+  "csNullableTranslation": "null|undefined"
+}

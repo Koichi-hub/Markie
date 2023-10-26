@@ -18,8 +18,8 @@ export const Sidebar = () => {
   return (
     <div className={styles['sidebar']}>
       <div className={styles['user']}>
-        <img className={styles['user-picture']} src={user?.picture ?? ''} />
-        <div className={styles['user-username']}>{user?.username}</div>
+        <img className={styles['user-picture']} src={''} />
+        <div className={styles['user-username']}>{user?.userName}</div>
       </div>
       <TagsList />
       <div className={styles['buttons']}>

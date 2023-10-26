@@ -2,13 +2,13 @@
 {
     public class OAuthSettings
     {
-        public string RedirectUri { get; set; } = null!;
         public Google Google { get; set; } = null!;
         public VK VK { get; set; } = null!;
     }
 
     public class Google
     {
+        public string RedirectUri { get; set; } = null!;
         public string AuthUri { get; set; } = null!;
         public string TokenUri { get; set; } = null!;
         public string APIUri { get; set; } = null!;
@@ -23,6 +23,7 @@
 
     public class VK
     {
+        public string RedirectUri { get; set; } = null!;
         public string AuthUri { get; set; } = null!;
         public string TokenUri { get; set; } = null!;
         public string APIUri { get; set; } = null!;

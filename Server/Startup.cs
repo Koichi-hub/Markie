@@ -26,6 +26,7 @@ namespace Server
             services.AddSwaggerGen();
             services.AddHttpClient();
             services.AddAutoMapper(typeof(MappingProfile));
+            services.AddCors();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INoteService, NoteService>();
@@ -48,6 +49,8 @@ namespace Server
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseCors(builder => builder.AllowAnyOrigin());
 
             app.UseAuthorization();
 

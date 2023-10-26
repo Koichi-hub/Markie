@@ -1,24 +1,24 @@
 import dayjs from 'dayjs';
-import { Note } from '../../../../../../models/note';
+import { NoteDto } from '../../../../../../models';
 import styles from './NoteCard.module.scss';
 import { IconButton } from './components/icon-button';
 import { useMemo } from 'react';
 
 type Props = {
-  note: Note;
+  note: NoteDto;
   onClick?: () => void;
 };
 
 export const NoteCard = ({ note, onClick }: Props) => {
   const updatedAt = useMemo(() => {
-    if (!note.updated_at) return 'дата отсутствует';
-    return dayjs(note.updated_at).format('DD/MM/YYYY');
-  }, [note.updated_at]);
+    if (!note.updatedAt) return 'дата отсутствует';
+    return dayjs(note.updatedAt).format('DD/MM/YYYY');
+  }, [note.updatedAt]);
 
   const createdAt = useMemo(() => {
-    if (!note.created_at) return 'дата отсутствует';
-    return dayjs(note.created_at).format('DD/MM/YYYY');
-  }, [note.created_at]);
+    if (!note.createdAt) return 'дата отсутствует';
+    return dayjs(note.createdAt).format('DD/MM/YYYY');
+  }, [note.createdAt]);
 
   return (
     <div className={styles['note-card']}>
@@ -27,7 +27,7 @@ export const NoteCard = ({ note, onClick }: Props) => {
           <IconButton src="assets/icons/edit.svg" onClick={onClick} />
         </div>
         <div className={styles['title']}>
-          {note?.title ?? 'название отсутствует'}
+          {note?.name ?? 'название отсутствует'}
         </div>
       </div>
       <div className={styles['note-card-bottom']}>
