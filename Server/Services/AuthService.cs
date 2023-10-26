@@ -79,7 +79,7 @@ namespace Server.Services
 
             // creating user's session
             var userOAuth = await _databaseContext.OAuths
-                .Where(o => o.Email == googleUserInfoResponse.Email && o.Id == googleUserInfoResponse.Id)
+                .Where(o => o.Id == googleUserInfoResponse.Id)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync();
 
@@ -103,7 +103,7 @@ namespace Server.Services
                 {
                     Guid = Guid.NewGuid(),
                     Role = RoleEnum.User,
-                    UserName = googleUserInfoResponse.Email.Split('@')[0]
+                    UserName = googleUserInfoResponse.Name
                 };
 
                 user.OAuths.Add(oauth);
@@ -125,9 +125,103 @@ namespace Server.Services
             };
 		}
 
-        public Task<UserAuthorizedDto> AuthViaVK(string code)
+        public async Task<UserAuthorizedDto> AuthViaVK(string code)
         {
-            throw new NotImplementedException();
+            var vk = _oauthSettings.VK;
+            var httpClient = _httpClientFactory.CreateClient();
+
+            // auth
+            var parameters = new Dictionary<string, string?>()
+            {
+                { "client_id", vk.ClientId },
+                { "client_secret", vk.ClientSecret },
+                { "redirect_uri", _oauthSettings.RedirectUri },
+                { "code", code }
+            };
+            var response = await httpClient.GetAsync(
+                new Uri(QueryHelpers.AddQueryString(vk.TokenUri, parameters)).ToString()
+            );
+            if (!response.IsSuccessStatusCode) throw new HttpRequestException("vk auth request: failed");
+
+            VKAuthResponse vkAuthResponse;
+            try
+            {
+                vkAuthResponse = await response.Content.ReadFromJsonAsync<VKAuthResponse>();
+            }
+            catch (NotSupportedException) { throw new HttpRequestException("vk auth request: content type is not supported"); }
+            catch (JsonException) { throw new HttpRequestException("vk auth request: invalid json"); }
+
+            // userinfo
+            parameters = new Dictionary<string, string?>()
+            {
+                { "access_token", vkAuthResponse.AccessToken },
+                { "user_ids", vkAuthResponse.UserId.ToString() },
+                { "v", vk.APIVersion }
+            };
+            response = await httpClient.GetAsync(
+                new Uri(QueryHelpers.AddQueryString(vk.APIUri, parameters)).ToString()
+            );
+            if (!response.IsSuccessStatusCode) throw new HttpRequestException("vk userinfo request: failed");
+
+            VKUserInfoResponse vkUserInfoResponse;
+            VKUser vkUser;
+            try
+            {
+                vkUserInfoResponse = await response.Content.ReadFromJsonAsync<VKUserInfoResponse>();
+                if (vkUserInfoResponse?.Response == null && vkUserInfoResponse.Response.Count > 0)
+                {
+                    throw new JsonException();
+                }
+                vkUser = vkUserInfoResponse.Response[0];
+            }
+            catch (NotSupportedException) { throw new HttpRequestException("vk userinfo request: content type is not supported"); }
+            catch (JsonException) { throw new HttpRequestException("vk userinfo request: invalid json"); }
+
+            // creating user's session
+            var userOAuth = await _databaseContext.OAuths
+                .Where(o => o.Id == vkUser.Id.ToString())
+                .Include(o => o.User)
+                .FirstOrDefaultAsync();
+
+            var user = new User();
+            if (userOAuth == null)
+            {
+                var oauth = new OAuth
+                {
+                    Guid = Guid.NewGuid(),
+                    Id = vkUser.Id.ToString(),
+                    OAuthService = OAuthServiceEnum.VK,
+                };
+
+                var session = new Session
+                {
+                    Guid = Guid.NewGuid(),
+                };
+
+                user = new User
+                {
+                    Guid = Guid.NewGuid(),
+                    Role = RoleEnum.User,
+                    UserName = $"{vkUser.FirstName} {vkUser.LastName}"
+                };
+
+                user.OAuths.Add(oauth);
+                user.Sessions.Add(session);
+                session.OAuth = oauth;
+
+                _databaseContext.Users.Add(user);
+                await _databaseContext.SaveChangesAsync();
+            }
+            else
+            {
+                user = userOAuth.User;
+            }
+
+            return new UserAuthorizedDto
+            {
+                AccessToken = "",
+                User = _mapper.Map<UserDto>(user)
+            };
         }
 
         public string GetGoogleAuthUri()

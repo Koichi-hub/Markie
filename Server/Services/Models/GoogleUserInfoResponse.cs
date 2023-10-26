@@ -10,10 +10,7 @@ namespace Server.Services.Models
 		[JsonPropertyName("email")]
 		public string? Email { get; set; }
 
-		[JsonPropertyName("verified_email")]
-		public bool VerifiedEmail { get; set; }
-
-		[JsonPropertyName("picture")]
-		public string? Picture { get; set; }
+		[JsonPropertyName("name")]
+		public string? Name { get; set; }
 	}
 }
