@@ -25,6 +25,8 @@
     {
         public string AuthUri { get; set; } = null!;
         public string TokenUri { get; set; } = null!;
+        public string APIUri { get; set; } = null!;
+        public string APIVersion { get; set; } = null!;
         public string Display { get; set; } = null!;
         public string Scope { get; set; } = null!;
         public string ResponseType { get; set; } = null!;
