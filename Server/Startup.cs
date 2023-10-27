@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Server.Configuration;
 using Server.Database;
+using Server.Extensions;
+using Server.Middlewares;
 using Server.Services;
 using Server.Services.Interfaces;
 
@@ -17,17 +19,18 @@ namespace Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var oauthSettingsSection = Configuration.GetSection("OAuthSettings");
-            services.Configure<OAuthSettings>(oauthSettingsSection);
+            services.Configure<OAuthSettings>(Configuration.GetSection("OAuthSettings"));
+            services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
 
             services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
+            services.AddHttpContextAccessor();
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddHttpClient();
             services.AddAutoMapper(typeof(MappingProfile));
-            services.AddCors();
 
+            services.AddTransient<IJWTService, JWTService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<INoteService, NoteService>();
             services.AddScoped<ITagService, TagService>();
@@ -52,7 +55,7 @@ namespace Server
 
             app.UseCors(builder => builder.AllowAnyOrigin());
 
-            app.UseAuthorization();
+            app.UseCustomAuthorization();
 
             app.MapControllers();
         }

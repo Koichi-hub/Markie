@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { UserAuthorizedDto } from '../models';
+import { UserDto } from '../models';
 
 export const getGoogleAuthUri = async (): Promise<string> => {
   const response = await axios.get('http://localhost:8080/api/auth/uri/google');
@@ -8,7 +8,7 @@ export const getGoogleAuthUri = async (): Promise<string> => {
 
 export const getGoogleAuthorizedUser = async (
   code: string
-): Promise<UserAuthorizedDto> => {
+): Promise<UserDto> => {
   const response = await axios.get('http://localhost:8080/api/auth/google', {
     params: { code },
   });
@@ -20,9 +20,7 @@ export const getVKAuthUri = async (): Promise<string> => {
   return response.data;
 };
 
-export const getVKAuthorizedUser = async (
-  code: string
-): Promise<UserAuthorizedDto> => {
+export const getVKAuthorizedUser = async (code: string): Promise<UserDto> => {
   const response = await axios.get('http://localhost:8080/api/auth/vk', {
     params: { code },
   });

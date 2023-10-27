@@ -14,6 +14,7 @@ namespace Server.Services
 {
     public class AuthService : IAuthService
     {
+        private readonly IJWTService _jWTService;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly OAuthSettings _oauthSettings;
         private readonly DatabaseContext _databaseContext;
@@ -23,16 +24,18 @@ namespace Server.Services
             IOptions<OAuthSettings> oauthSettingsAccessor, 
             IHttpClientFactory httpClientFactory, 
             DatabaseContext databaseContext,
-			IMapper mapper
-		)
+			IMapper mapper,
+            IJWTService jWTService
+        )
         {
             _oauthSettings = oauthSettingsAccessor.Value;
             _httpClientFactory = httpClientFactory;
             _databaseContext = databaseContext;
 			_mapper = mapper;
+            _jWTService = jWTService;
 		}
 
-        public async Task<UserAuthorizedDto> AuthViaGoogle(string code)
+        public async Task<(string, UserDto)> AuthViaGoogle(string code)
         {
             var google = _oauthSettings.Google;
             var httpClient = _httpClientFactory.CreateClient();
@@ -78,25 +81,26 @@ namespace Server.Services
 			catch (JsonException) { throw new HttpRequestException("google userinfo request: invalid json"); }
 
             // creating user's session
-            var userOAuth = await _databaseContext.OAuths
+            var oauth = await _databaseContext.OAuths
                 .Where(o => o.Id == googleUserInfoResponse.Id)
                 .Include(o => o.User)
                 .FirstOrDefaultAsync();
 
-            var user = new User();
-            if (userOAuth == null)
+            var user = oauth?.User;
+
+            var session = new Session
             {
-                var oauth = new OAuth
+                Guid = Guid.NewGuid()
+            };
+            
+            if (oauth == null)
+            {
+                oauth = new OAuth
                 {
                     Guid = Guid.NewGuid(),
                     Email = googleUserInfoResponse.Email,
                     Id = googleUserInfoResponse.Id,
                     OAuthService = OAuthServiceEnum.Google,
-                };
-
-                var session = new Session
-                {
-                    Guid = Guid.NewGuid(),
                 };
 
                 user = new User
@@ -107,25 +111,20 @@ namespace Server.Services
                 };
 
                 user.OAuths.Add(oauth);
-                user.Sessions.Add(session);
-                session.OAuth = oauth;
-
-                _databaseContext.Users.Add(user);
-                await _databaseContext.SaveChangesAsync();
-            }
-            else
-            {
-                user = userOAuth.User;
             }
 
-            return new UserAuthorizedDto
-            {
-                AccessToken = "",
-                User = _mapper.Map<UserDto>(user)
-            };
+            session.OAuth = oauth;
+            session.User = user;
+
+            _databaseContext.Sessions.Add(session);
+            await _databaseContext.SaveChangesAsync();
+
+            var accessToken = _jWTService.CreateAccessToken(session.Guid.ToString());
+
+            return (accessToken, _mapper.Map<UserDto>(user));
 		}
 
-        public async Task<UserAuthorizedDto> AuthViaVK(string code)
+        public async Task<(string, UserDto)> AuthViaVK(string code)
         {
             var vk = _oauthSettings.VK;
             var httpClient = _httpClientFactory.CreateClient();
@@ -178,24 +177,25 @@ namespace Server.Services
             catch (JsonException) { throw new HttpRequestException("vk userinfo request: invalid json"); }
 
             // creating user's session
-            var userOAuth = await _databaseContext.OAuths
+            var oauth = await _databaseContext.OAuths
                 .Where(o => o.Id == vkUser.Id.ToString())
                 .Include(o => o.User)
                 .FirstOrDefaultAsync();
 
-            var user = new User();
-            if (userOAuth == null)
+            var user = oauth?.User;
+
+            var session = new Session
             {
-                var oauth = new OAuth
+                Guid = Guid.NewGuid()
+            };
+
+            if (oauth == null)
+            {
+                oauth = new OAuth
                 {
                     Guid = Guid.NewGuid(),
                     Id = vkUser.Id.ToString(),
                     OAuthService = OAuthServiceEnum.VK,
-                };
-
-                var session = new Session
-                {
-                    Guid = Guid.NewGuid(),
                 };
 
                 user = new User
@@ -206,22 +206,17 @@ namespace Server.Services
                 };
 
                 user.OAuths.Add(oauth);
-                user.Sessions.Add(session);
-                session.OAuth = oauth;
-
-                _databaseContext.Users.Add(user);
-                await _databaseContext.SaveChangesAsync();
-            }
-            else
-            {
-                user = userOAuth.User;
             }
 
-            return new UserAuthorizedDto
-            {
-                AccessToken = "",
-                User = _mapper.Map<UserDto>(user)
-            };
+            session.OAuth = oauth;
+            session.User = user;
+
+            _databaseContext.Sessions.Add(session);
+            await _databaseContext.SaveChangesAsync();
+
+            var accessToken = _jWTService.CreateAccessToken(session.Guid.ToString());
+
+            return (accessToken, _mapper.Map<UserDto>(user));
         }
 
         public string GetGoogleAuthUri()

@@ -20,8 +20,8 @@ export const Auth = () => {
 
   const authViaGoogle = useCallback(
     async (code: string) => {
-      const response = await getGoogleAuthorizedUser(code);
-      dispatch(setUser(response.user));
+      const user = await getGoogleAuthorizedUser(code);
+      dispatch(setUser(user));
       navigate(routes.notes);
     },
     [dispatch, navigate]
@@ -29,8 +29,8 @@ export const Auth = () => {
 
   const authViaVK = useCallback(
     async (code: string) => {
-      const response = await getVKAuthorizedUser(code);
-      dispatch(setUser(response.user));
+      const user = await getVKAuthorizedUser(code);
+      dispatch(setUser(user));
       navigate(routes.notes);
     },
     [dispatch, navigate]
