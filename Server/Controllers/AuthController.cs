@@ -60,6 +60,8 @@ namespace Server.Controllers
         {
             var options = new CookieOptions
             {
+                HttpOnly = true,
+                Secure = false,
                 Expires = DateTime.Now.AddDays(7)
             };
             _httpContextAccessor.HttpContext.Response.Cookies.Append("access_token", accessToken, options);

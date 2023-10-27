@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Server.Attributes;
 using Server.Database;
 using Server.Services.Models;
 
@@ -10,20 +11,27 @@ namespace Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public DatabaseContext DatabaseContext { get; set; }
         public IMapper Mapper { get; set; }
 
-        public UserController(DatabaseContext databaseContext, IMapper mapper)
+        public UserController(DatabaseContext databaseContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             DatabaseContext = databaseContext;
             Mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
+        [CustomAuthorize]
         [HttpGet]
-        public async Task<List<UserDto>> GetUsers()
+        public async Task<UserDto?> GetUsers()
         {
-            var user = await DatabaseContext.Users.ToListAsync();
-            return Mapper.Map<List<UserDto>>(user);
+            var guid = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+
+            if (guid == null) return null;
+
+            var user = await DatabaseContext.Users.FirstOrDefaultAsync(u => u.Guid == Guid.Parse(guid));
+            return Mapper.Map<UserDto>(user);
         }
     }
 }
