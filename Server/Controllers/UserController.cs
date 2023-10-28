@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using Server.Attributes;
-using Server.Database;
+using Server.Services.Interfaces;
 using Server.Services.Models;
 
 namespace Server.Controllers
@@ -11,27 +9,209 @@ namespace Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public DatabaseContext DatabaseContext { get; set; }
-        public IMapper Mapper { get; set; }
+        private readonly IHttpContextAccessor _httpContextAccessor = null!;
+        private readonly IUserService _userService;
+        private readonly ITagService _tagService;
+        private readonly INoteService _noteService;
+        private readonly Guid authorizedUserGuid; 
 
-        public UserController(DatabaseContext databaseContext, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public UserController(
+            IHttpContextAccessor httpContextAccessor, 
+            IUserService userService,
+            ITagService tagService,
+            INoteService noteService
+        )
         {
-            DatabaseContext = databaseContext;
-            Mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _userService = userService;
+            _tagService = tagService;
+            _noteService = noteService;
+
+            var guid = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+            authorizedUserGuid = Guid.Parse(guid!);
+        }
+
+        // users
+        [CustomAuthorize]
+        [HttpGet("{userGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserByGuid([FromRoute] Guid userGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var user = await _userService.GetUserByGuid(userGuid);
+            if (user == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(user);
         }
 
         [CustomAuthorize]
-        [HttpGet]
-        public async Task<UserDto?> GetUsers()
+        [HttpPut("{userGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeUser([FromRoute] Guid userGuid, [FromBody] ChangeUserDto changeUserDto)
         {
-            var guid = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
 
-            if (guid == null) return null;
+            var user = await _userService.ChangeUser(userGuid, changeUserDto);
+            if (user == null) return StatusCode(StatusCodes.Status404NotFound);
 
-            var user = await DatabaseContext.Users.FirstOrDefaultAsync(u => u.Guid == Guid.Parse(guid));
-            return Mapper.Map<UserDto>(user);
+            return Ok(user);
+        }
+
+        // tags
+        [CustomAuthorize]
+        [HttpGet("{userGuid}/tags")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetTags([FromRoute] Guid userGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var tags = await _tagService.GetTags(userGuid);
+            if (tags == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(tags);
+        }
+
+        [CustomAuthorize]
+        [HttpPost("{userGuid}/tags")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CreateTag([FromRoute] Guid userGuid, [FromBody] CreateTagDto createTagDto)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var tag = await _tagService.CreateTag(userGuid, createTagDto);
+            if (tag == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(tag);
+        }
+
+        [CustomAuthorize]
+        [HttpPut("{userGuid}/tags/{tagGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeTag([FromRoute] Guid userGuid, [FromRoute] Guid tagGuid, [FromBody] ChangeTagDto changeTagDto)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var tag = await _tagService.ChangeTag(userGuid, tagGuid, changeTagDto);
+            if (tag == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(tag);
+        }
+
+        [CustomAuthorize]
+        [HttpDelete("{userGuid}/tags/{tagGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteTag([FromRoute] Guid userGuid, [FromRoute] Guid tagGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var tag = await _tagService.DeleteTag(userGuid, tagGuid);
+            if (tag == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(tag);
+        }
+
+        // notes
+        [CustomAuthorize]
+        [HttpGet("{userGuid}/tags/{tagGuid}/notes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetNotesByTag([FromRoute] Guid userGuid, [FromRoute] Guid tagGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var notes = await _noteService.GetNotesByTag(userGuid, tagGuid);
+            if (notes == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(notes);
+        }
+
+        [CustomAuthorize]
+        [HttpGet("{userGuid}/notes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetNotes([FromRoute] Guid userGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var notes = await _noteService.GetNotes(userGuid);
+            if (notes == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(notes);
+        }
+
+        [CustomAuthorize]
+        [HttpGet("{userGuid}/notes/{noteGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetNote([FromRoute] Guid userGuid, [FromRoute] Guid noteGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var note = await _noteService.GetNote(userGuid, noteGuid);
+            if (note == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(note);
+        }
+
+        [CustomAuthorize]
+        [HttpPost("{userGuid}/notes")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CreateNote([FromRoute] Guid userGuid, [FromBody] CreateNoteDto createNoteDto)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var note = await _noteService.CreateNote(userGuid, createNoteDto);
+            if (note == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(note);
+        }
+
+        [CustomAuthorize]
+        [HttpPut("{userGuid}/notes/{noteGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ChangeNote([FromRoute] Guid userGuid, [FromRoute] Guid noteGuid, [FromBody] ChangeNoteDto changeNoteDto)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var note = await _noteService.ChangeNote(userGuid, noteGuid, changeNoteDto);
+            if (note == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(note);
+        }
+
+        [CustomAuthorize]
+        [HttpDelete("{userGuid}/notes/{noteGuid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteNote([FromRoute] Guid userGuid, [FromRoute] Guid noteGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var note = await _noteService.DeleteNote(userGuid, noteGuid);
+            if (note == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(note);
         }
     }
 }

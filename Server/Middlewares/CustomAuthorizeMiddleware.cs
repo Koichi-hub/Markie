@@ -43,8 +43,14 @@ namespace Server.Middlewares
 
                 var session = await databaseContext.Sessions
                     .FirstOrDefaultAsync(s => s.Guid == Guid.Parse(sessionGuid));
-
                 if (session == null)
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return;
+                }
+
+                var isUserExists = await databaseContext.Users.AnyAsync(u => u.Guid == session.UserGuid);
+                if (!isUserExists)
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     return;

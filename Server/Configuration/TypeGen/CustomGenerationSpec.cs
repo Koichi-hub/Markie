@@ -12,6 +12,11 @@ namespace Server.Configuration.TypeGen
             AddInterface<TagDto>();
             AddInterface<OAuthDto>();
             AddInterface<SessionDto>();
+            AddInterface<CreateNoteDto>();
+            AddInterface<ChangeNoteDto>();
+            AddInterface<CreateTagDto>();
+            AddInterface<ChangeTagDto>();
+            AddInterface<ChangeUserDto>();
         }
     }
 }
