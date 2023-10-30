@@ -22,6 +22,7 @@ namespace Server.Services
         {
             var tag = await _databaseContext.Tags
                 .Include(t => t.Notes)
+                .ThenInclude(n => n.Tags)
                 .FirstOrDefaultAsync(t => t.UserGuid == userGuid && t.Guid == tagGuid);
             if (tag == null) return null;
 
@@ -30,13 +31,17 @@ namespace Server.Services
 
         public async Task<IList<NoteDto>?> GetNotes(Guid userGuid)
         {
-            var notes = await _databaseContext.Notes.Where(n => n.UserGuid == userGuid).ToListAsync();
+            var notes = await _databaseContext.Notes
+                .Include(n => n.Tags)
+                .Where(n => n.UserGuid == userGuid).ToListAsync();
             return _mapper.Map<List<NoteDto>>(notes);
         }
 
         public async Task<NoteDto?> GetNote(Guid userGuid, Guid noteGuid)
         {
-            var note = await _databaseContext.Notes.FirstOrDefaultAsync(n => n.UserGuid == userGuid && n.Guid == noteGuid);
+            var note = await _databaseContext.Notes
+                .Include(n => n.Tags)
+                .FirstOrDefaultAsync(n => n.UserGuid == userGuid && n.Guid == noteGuid);
             if (note == null) return null;
 
             return _mapper.Map<NoteDto>(note);
@@ -51,6 +56,12 @@ namespace Server.Services
                 Content = createNoteDto.Content,
                 UserGuid = userGuid
             };
+
+            if (createNoteDto.TagsGuids.Count > 0)
+            {
+                var tags = await _databaseContext.Tags.Where(t => createNoteDto.TagsGuids.Contains(t.Guid)).ToListAsync();
+                note.Tags.AddRange(tags);
+            }
 
             _databaseContext.Notes.Add(note);
             await _databaseContext.SaveChangesAsync();

@@ -10,7 +10,8 @@ namespace Server.Services
         {
             CreateMap<User, UserDto>();
             CreateMap<Note, NoteDto>();
-            CreateMap<Tag, TagDto>();
+            CreateMap<Tag, TagDto>()
+                .ForMember(dest => dest.NotesCount, opt => opt.MapFrom(src => src.Notes.Count));
             CreateMap<Session, SessionDto>();
             CreateMap<OAuth, OAuthDto>();
         }

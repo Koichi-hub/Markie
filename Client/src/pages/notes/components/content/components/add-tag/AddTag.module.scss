@@ -18,13 +18,7 @@
     gap    : $gap-4px;
 }
 
-.selected-tag {
-    background: $grey-80;
-}
-
 .tags {
     display: flex;
     gap    : $gap-4px;
-
-    &__list {}
 }

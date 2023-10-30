@@ -6,7 +6,7 @@ import {
   useAppSelector,
 } from '../../../../../../store';
 import { useCallback, useEffect, useMemo } from 'react';
-import { fetchTags, setTag } from '../../../../notesSlice';
+import { fetchTags, selectTagAction } from '../../../../notesSlice';
 import { TagDto } from '../../../../../../models';
 
 export const TagsList = () => {
@@ -15,7 +15,7 @@ export const TagsList = () => {
   const tags = useAppSelector((state: RootState) => state.notes.tags);
 
   const onSelectTag = useCallback(
-    (tag: TagDto) => dispatch(setTag(tag)),
+    (tag: TagDto) => dispatch(selectTagAction(tag)),
     [dispatch]
   );
 

@@ -1,6 +1,8 @@
 import { AnyAction, ThunkDispatch, configureStore } from '@reduxjs/toolkit';
 import appReducer from './appSlice';
-import notesSlice from '../pages/notes/notesSlice';
+import notesSlice, {
+  setTagListenerMiddleware,
+} from '../pages/notes/notesSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 // store состоит из reducer'ов
@@ -14,7 +16,7 @@ export const store = configureStore({
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).prepend(setTagListenerMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

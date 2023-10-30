@@ -65,6 +65,8 @@ namespace Server.Services
 
         public async Task<IList<TagDto>?> DeleteTags(Guid userGuid, IList<Guid> tagsGuids)
         {
+            if (tagsGuids.Count == 0) return null;
+
             var tags = await _databaseContext.Tags.Where(t => tagsGuids.Contains(t.Guid)).ToListAsync();
 
             _databaseContext.RemoveRange(tags);

@@ -1,6 +1,13 @@
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { CreateTagDto, NoteDto, TagDto } from '../../models';
-import { tagsApi } from '../../api/index';
+import {
+  PayloadAction,
+  createAction,
+  createAsyncThunk,
+  createListenerMiddleware,
+  createSlice,
+} from '@reduxjs/toolkit';
+import { CreateNoteDto, CreateTagDto, NoteDto, TagDto } from '../../models';
+import { notesApi, tagsApi } from '../../api/index';
+import { RootState } from '../../store';
 
 // state
 export type NotesState = {
@@ -55,6 +62,33 @@ export const fetchTags = createAsyncThunk(
   }
 );
 
+export const createNote = createAsyncThunk(
+  'notesSlice/createNote',
+  async ({
+    userGuid,
+    createNoteDto,
+  }: {
+    userGuid: string;
+    createNoteDto: CreateNoteDto;
+  }) => {
+    const note = await notesApi.createNote(userGuid, createNoteDto);
+    return note;
+  }
+);
+
+export const fetchNotesByTag = createAsyncThunk(
+  'notesSlice/getNotes',
+  async ({ userGuid, tagGuid }: { userGuid: string; tagGuid: string }) => {
+    const notes = await notesApi.fetchNotesByTag(userGuid, tagGuid);
+    return notes;
+  }
+);
+
+// actions
+export const selectTagAction = createAction<TagDto>(
+  'notesSlice/selectTagAction'
+);
+
 // reducers
 export const notesSlice = createSlice({
   initialState,
@@ -103,6 +137,12 @@ export const notesSlice = createSlice({
     builder.addCase(fetchTags.fulfilled, (state, action) => {
       state.tags = action.payload;
     });
+    builder.addCase(createNote.fulfilled, (state, action) => {
+      state.notes?.push(action.payload);
+    });
+    builder.addCase(fetchNotesByTag.fulfilled, (state, action) => {
+      state.notes = action.payload;
+    });
   },
 });
 
@@ -119,5 +159,21 @@ export const {
   toggleOpenAddTagToast,
   setOpenAddNoteToast,
 } = notesSlice.actions;
+
+// middleware
+export const setTagListenerMiddleware = createListenerMiddleware();
+setTagListenerMiddleware.startListening({
+  actionCreator: selectTagAction,
+  effect: async (action, listenerApi) => {
+    listenerApi.cancelActiveListeners();
+
+    const store = listenerApi.getState() as RootState;
+    const userGuid = store.app.user?.guid as string;
+    const notes = await notesApi.fetchNotesByTag(userGuid, action.payload.guid);
+
+    listenerApi.dispatch(setTag(action.payload));
+    listenerApi.dispatch(setNotes(notes));
+  },
+});
 
 export default notesSlice.reducer;

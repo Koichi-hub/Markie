@@ -9,6 +9,7 @@ import {
 import { Input } from '../../../input';
 import { CreateTagDto, TagDto } from '../../../../../../models';
 import { useAppDispatch, useAppSelector } from '../../../../../../store';
+import { TagsList } from '../tags-list';
 
 export const AddTag = () => {
   const dispatch = useAppDispatch();
@@ -18,8 +19,14 @@ export const AddTag = () => {
   const [tagName, setTagName] = useState('');
   const [selectedTags, setSelectedTags] = useState([] as TagDto[]);
 
-  const onClickTag = useCallback(
-    (tag: TagDto) => () => {
+  const removeButtonText = useMemo(() => {
+    const text =
+      selectedTags.length > 0 ? `Удалить (${selectedTags.length})` : 'Удалить';
+    return text;
+  }, [selectedTags.length]);
+
+  const onSelectTag = useCallback(
+    (tag: TagDto) => {
       if (selectedTags.some(t => t.guid === tag.guid)) {
         setSelectedTags(selectedTags.filter(t => t.guid !== tag.guid));
       } else {
@@ -30,6 +37,8 @@ export const AddTag = () => {
   );
 
   const onCreate = useCallback(() => {
+    if (!tagName) return;
+
     const createTagDto = {
       name: tagName,
     } as CreateTagDto;
@@ -38,9 +47,12 @@ export const AddTag = () => {
   }, [dispatch, tagName, userGuid]);
 
   const onDeleteSome = useCallback(() => {
+    if (selectedTags.length === 0) return;
+
     dispatch(
       deleteTags({ userGuid, tagsGuids: selectedTags.map(t => t.guid) })
     );
+    setSelectedTags([]);
   }, [dispatch, selectedTags, userGuid]);
 
   const onClose = useCallback(
@@ -48,31 +60,26 @@ export const AddTag = () => {
     [dispatch]
   );
 
-  const renderTags = useMemo(() => {
-    return tags?.map(tag => {
-      const className = selectedTags.some(t => t.guid === tag.guid)
-        ? styles['selected-tag']
-        : '';
-      return (
-        <div key={tag.guid} className={className} onClick={onClickTag(tag)}>
-          {tag.name}
-        </div>
-      );
-    });
-  }, [onClickTag, selectedTags, tags]);
-
   return (
     <div className={styles['container']}>
       <div className={styles['controls']}>
         <span className={styles['title']}>Название тега:</span>
         <Input value={tagName} onChange={setTagName} />
         <Button text="Создать" color="grey-80" onClick={onCreate} />
-        <Button text="Удалить" color="grey-80" onClick={onDeleteSome} />
+        <Button
+          text={removeButtonText}
+          color="grey-80"
+          onClick={onDeleteSome}
+        />
         <Button text="Закрыть" color="grey-80" onClick={onClose} />
       </div>
       <div className={styles['tags']}>
         <span className={styles['title']}>Теги:</span>
-        <div className={styles['tags__list']}>{renderTags}</div>
+        <TagsList
+          tags={tags ?? []}
+          selectedTags={selectedTags}
+          onSelectTag={onSelectTag}
+        />
       </div>
     </div>
   );

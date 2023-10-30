@@ -8,5 +8,6 @@
         public Guid UserGuid { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public IList<TagDto> Tags { get; set; } = new List<TagDto>();
     }
 }
