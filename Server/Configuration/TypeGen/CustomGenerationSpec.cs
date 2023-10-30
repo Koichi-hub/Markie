@@ -8,6 +8,7 @@ namespace Server.Configuration.TypeGen
         public CustomGenerationSpec()
         {
             AddInterface<UserDto>();
+            AddInterface<UserAuthorizedDto>();
             AddInterface<NoteDto>();
             AddInterface<TagDto>();
             AddInterface<OAuthDto>();

@@ -2,47 +2,61 @@ import { useCallback, useEffect } from 'react';
 import { RoundendButton } from '../../components/rounded-button';
 import styles from './Auth.module.scss';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import {
-  getGoogleAuthUri,
-  getGoogleAuthorizedUser,
-  getVKAuthUri,
-  getVKAuthorizedUser,
-} from '../../api';
+import { authApi } from '../../api';
 import { routes } from '../../router';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../store/appSlice';
+import { useCookies } from 'react-cookie';
+import dayjs from 'dayjs';
 
 export const Auth = () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [cookies, setCookie] = useCookies();
   const [searchParams] = useSearchParams();
   const { variant } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  const setCookieLocal = useCallback(
+    (key: string, value: string) => {
+      setCookie(key, value, {
+        expires: dayjs().add(7, 'day').toDate(),
+        domain: 'localhost',
+        path: '/',
+        secure: false,
+        sameSite: 'none',
+      });
+    },
+    [setCookie]
+  );
+
   const authViaGoogle = useCallback(
     async (code: string) => {
-      const user = await getGoogleAuthorizedUser(code);
-      dispatch(setUser(user));
+      const userAuthorized = await authApi.getGoogleAuthorizedUser(code);
+      setCookieLocal('access_token', userAuthorized.accessToken);
+      dispatch(setUser(userAuthorized.user));
       navigate(routes.notes);
     },
-    [dispatch, navigate]
+    [dispatch, navigate, setCookieLocal]
   );
 
   const authViaVK = useCallback(
     async (code: string) => {
-      const user = await getVKAuthorizedUser(code);
-      dispatch(setUser(user));
+      const userAuthorized = await authApi.getVKAuthorizedUser(code);
+      setCookieLocal('access_token', userAuthorized.accessToken);
+      dispatch(setUser(userAuthorized.user));
       navigate(routes.notes);
     },
-    [dispatch, navigate]
+    [dispatch, navigate, setCookieLocal]
   );
 
   const onSelectGoogleAuth = useCallback(async () => {
-    const uri = await getGoogleAuthUri();
+    const uri = await authApi.getGoogleAuthUri();
     window.location.href = uri;
   }, []);
 
   const onSelectVKAuth = useCallback(async () => {
-    const uri = await getVKAuthUri();
+    const uri = await authApi.getVKAuthUri();
     window.location.href = uri;
   }, []);
 

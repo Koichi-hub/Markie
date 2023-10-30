@@ -1,33 +1,35 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { TagItem } from './tag-item';
 import styles from './TagsList.module.scss';
-import { RootState } from '../../../../../../store';
-import { useCallback, useMemo } from 'react';
-import { setTag } from '../../../../notesSlice';
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from '../../../../../../store';
+import { useCallback, useEffect, useMemo } from 'react';
+import { fetchTags, setTag } from '../../../../notesSlice';
 import { TagDto } from '../../../../../../models';
 
 export const TagsList = () => {
-  const dispatch = useDispatch();
-  const tagsNotesAmount = useSelector(
-    (state: RootState) => state.notes.tagsNotesAmount
-  );
+  const dispatch = useAppDispatch();
+  const userGuid = useAppSelector(state => state.app.user?.guid as string);
+  const tags = useAppSelector((state: RootState) => state.notes.tags);
 
   const onSelectTag = useCallback(
     (tag: TagDto) => dispatch(setTag(tag)),
     [dispatch]
   );
 
-  const renderNotes = useMemo(
+  useEffect(() => {
+    dispatch(fetchTags(userGuid));
+  }, [dispatch, userGuid]);
+
+  const renderTags = useMemo(
     () =>
-      tagsNotesAmount?.map((tagNotesAmount, index) => (
-        <TagItem
-          key={index}
-          tagNotesAmount={tagNotesAmount}
-          onSelectTag={onSelectTag}
-        />
+      tags?.map((tag, index) => (
+        <TagItem key={index} tag={tag} onSelectTag={onSelectTag} />
       )),
-    [onSelectTag, tagsNotesAmount]
+    [onSelectTag, tags]
   );
 
-  return <div className={styles['notes-groups']}>{renderNotes}</div>;
+  return <div className={styles['tags']}>{renderTags}</div>;
 };

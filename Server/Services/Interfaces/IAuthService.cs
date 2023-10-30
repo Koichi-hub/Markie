@@ -6,7 +6,7 @@ namespace Server.Services.Interfaces
     {
         public string GetGoogleAuthUri();
         public string GetVKAuthUri();
-        public Task<(string, UserDto)> AuthViaGoogle(string code);
-        public Task<(string, UserDto)> AuthViaVK(string code);
+        public Task<UserAuthorizedDto> AuthViaGoogle(string code);
+        public Task<UserAuthorizedDto> AuthViaVK(string code);
     }
 }

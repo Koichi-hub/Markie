@@ -13,15 +13,13 @@
     width      : 130px;
 }
 
-.input {
-    border       : 2px solid $grey-80;
-    border-radius: 15px;
-    padding      : 0 8px;
-}
-
 .controls {
     display: flex;
     gap    : $gap-4px;
+}
+
+.selected-tag {
+    background: $grey-80;
 }
 
 .tags {

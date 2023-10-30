@@ -18,7 +18,10 @@ export const Sidebar = () => {
   return (
     <div className={styles['sidebar']}>
       <div className={styles['user']}>
-        <img className={styles['user-picture']} src={''} />
+        <img
+          className={styles['user-picture']}
+          src={'/assets/icons/logo1.jpg'}
+        />
         <div className={styles['user-username']}>{user?.userName}</div>
       </div>
       <TagsList />

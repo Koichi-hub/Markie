@@ -35,9 +35,8 @@ namespace Server.Controllers
         {
             try
             {
-                var (accessToken, user) = await _authService.AuthViaGoogle(code);
-                AddAccessTokenInCookie(accessToken);
-                return Ok(user);
+                var userAuthorizedDto = await _authService.AuthViaGoogle(code);
+                return Ok(userAuthorizedDto);
             }
             catch (HttpRequestException) { return StatusCode(StatusCodes.Status502BadGateway); }
         }
@@ -49,22 +48,10 @@ namespace Server.Controllers
         {
             try 
             {
-                var (accessToken, user) = await _authService.AuthViaVK(code);
-                AddAccessTokenInCookie(accessToken);
-                return Ok(user);
+                var userAuthorizedDto = await _authService.AuthViaVK(code);
+                return Ok(userAuthorizedDto);
             }
             catch (HttpRequestException) { return StatusCode(StatusCodes.Status502BadGateway); }
-        }
-
-        private void AddAccessTokenInCookie(string accessToken)
-        {
-            var options = new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = false,
-                Expires = DateTime.Now.AddDays(7)
-            };
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("access_token", accessToken, options);
         }
     }
 }

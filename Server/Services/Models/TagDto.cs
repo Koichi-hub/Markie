@@ -5,5 +5,6 @@
         public Guid Guid { get; set; }
         public string Name { get; set; } = null!;
         public Guid UserGuid { get; set; }
+        public int NotesCount { get; set; }
     }
 }

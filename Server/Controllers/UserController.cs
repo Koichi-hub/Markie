@@ -5,6 +5,7 @@ using Server.Services.Models;
 
 namespace Server.Controllers
 {
+    [CustomAuthorize]
     [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
@@ -32,7 +33,18 @@ namespace Server.Controllers
         }
 
         // users
-        [CustomAuthorize]
+        [HttpGet("me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserByGuid()
+        {
+            var user = await _userService.GetUserByGuid(authorizedUserGuid);
+            if (user == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(user);
+        }
+
         [HttpGet("{userGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -47,7 +59,6 @@ namespace Server.Controllers
             return Ok(user);
         }
 
-        [CustomAuthorize]
         [HttpPut("{userGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -63,7 +74,6 @@ namespace Server.Controllers
         }
 
         // tags
-        [CustomAuthorize]
         [HttpGet("{userGuid}/tags")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -78,7 +88,6 @@ namespace Server.Controllers
             return Ok(tags);
         }
 
-        [CustomAuthorize]
         [HttpPost("{userGuid}/tags")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -93,7 +102,6 @@ namespace Server.Controllers
             return Ok(tag);
         }
 
-        [CustomAuthorize]
         [HttpPut("{userGuid}/tags/{tagGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -108,7 +116,6 @@ namespace Server.Controllers
             return Ok(tag);
         }
 
-        [CustomAuthorize]
         [HttpDelete("{userGuid}/tags/{tagGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -123,8 +130,21 @@ namespace Server.Controllers
             return Ok(tag);
         }
 
+        [HttpPost("{userGuid}/tags/delete-some")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteTag([FromRoute] Guid userGuid, [FromBody] List<Guid> tagsGuids)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var tags = await _tagService.DeleteTags(userGuid, tagsGuids);
+            if (tags == null) return StatusCode(StatusCodes.Status404NotFound);
+
+            return Ok(tags);
+        }
+
         // notes
-        [CustomAuthorize]
         [HttpGet("{userGuid}/tags/{tagGuid}/notes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -139,7 +159,6 @@ namespace Server.Controllers
             return Ok(notes);
         }
 
-        [CustomAuthorize]
         [HttpGet("{userGuid}/notes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -154,7 +173,6 @@ namespace Server.Controllers
             return Ok(notes);
         }
 
-        [CustomAuthorize]
         [HttpGet("{userGuid}/notes/{noteGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -169,7 +187,6 @@ namespace Server.Controllers
             return Ok(note);
         }
 
-        [CustomAuthorize]
         [HttpPost("{userGuid}/notes")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -184,7 +201,6 @@ namespace Server.Controllers
             return Ok(note);
         }
 
-        [CustomAuthorize]
         [HttpPut("{userGuid}/notes/{noteGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -199,7 +215,6 @@ namespace Server.Controllers
             return Ok(note);
         }
 
-        [CustomAuthorize]
         [HttpDelete("{userGuid}/notes/{noteGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

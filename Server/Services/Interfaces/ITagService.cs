@@ -8,5 +8,6 @@ namespace Server.Services.Interfaces
         public Task<TagDto?> CreateTag(Guid userGuid, CreateTagDto createTagDto);
         public Task<TagDto?> ChangeTag(Guid userGuid, Guid tagGuid, ChangeTagDto changeTagDto);
         public Task<TagDto?> DeleteTag(Guid userGuid, Guid tagGuid);
+        public Task<IList<TagDto>?> DeleteTags(Guid userGuid, IList<Guid> tagsGuids);
     }
 }

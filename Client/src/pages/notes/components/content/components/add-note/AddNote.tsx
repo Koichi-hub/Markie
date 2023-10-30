@@ -1,11 +1,14 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button } from '../../../button';
 import styles from './AddNote.module.scss';
 import { useDispatch } from 'react-redux';
 import { setOpenAddNoteToast } from '../../../../notesSlice';
+import { Input } from '../../../input';
 
 export const AddNote = () => {
   const dispatch = useDispatch();
+
+  const [noteName, setNoteName] = useState('');
 
   const onClose = useCallback(
     () => dispatch(setOpenAddNoteToast(false)),
@@ -18,7 +21,8 @@ export const AddNote = () => {
     <div className={styles['container']}>
       <div className={styles['controls']}>
         <span className={styles['title']}>Название заметки:</span>
-        <input className={styles['input']} type="text" />
+
+        <Input value={noteName} onChange={setNoteName} />
         <Button text="Создать" color="grey-80" />
         <Button text="Закрыть" color="grey-80" onClick={onClose} />
       </div>

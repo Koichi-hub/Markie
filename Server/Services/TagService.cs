@@ -62,5 +62,15 @@ namespace Server.Services
 
             return _mapper.Map<TagDto>(tag);
         }
+
+        public async Task<IList<TagDto>?> DeleteTags(Guid userGuid, IList<Guid> tagsGuids)
+        {
+            var tags = await _databaseContext.Tags.Where(t => tagsGuids.Contains(t.Guid)).ToListAsync();
+
+            _databaseContext.RemoveRange(tags);
+            await _databaseContext.SaveChangesAsync();
+
+            return _mapper.Map<List<TagDto>>(tags);
+        }
     }
 }

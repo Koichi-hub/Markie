@@ -35,7 +35,7 @@ namespace Server.Services
             _jWTService = jWTService;
 		}
 
-        public async Task<(string, UserDto)> AuthViaGoogle(string code)
+        public async Task<UserAuthorizedDto> AuthViaGoogle(string code)
         {
             var google = _oauthSettings.Google;
             var httpClient = _httpClientFactory.CreateClient();
@@ -121,10 +121,14 @@ namespace Server.Services
 
             var accessToken = _jWTService.CreateAccessToken(session.Guid.ToString());
 
-            return (accessToken, _mapper.Map<UserDto>(user));
+            return new UserAuthorizedDto 
+            {
+                AccessToken = accessToken,
+                User = _mapper.Map<UserDto>(user)
+            };
 		}
 
-        public async Task<(string, UserDto)> AuthViaVK(string code)
+        public async Task<UserAuthorizedDto> AuthViaVK(string code)
         {
             var vk = _oauthSettings.VK;
             var httpClient = _httpClientFactory.CreateClient();
@@ -216,7 +220,11 @@ namespace Server.Services
 
             var accessToken = _jWTService.CreateAccessToken(session.Guid.ToString());
 
-            return (accessToken, _mapper.Map<UserDto>(user));
+            return new UserAuthorizedDto
+            {
+                AccessToken = accessToken,
+                User = _mapper.Map<UserDto>(user)
+            };
         }
 
         public string GetGoogleAuthUri()

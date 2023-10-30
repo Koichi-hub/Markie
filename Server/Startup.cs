@@ -2,7 +2,6 @@
 using Server.Configuration;
 using Server.Database;
 using Server.Extensions;
-using Server.Middlewares;
 using Server.Services;
 using Server.Services.Interfaces;
 
@@ -24,6 +23,18 @@ namespace Server
 
             services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
             services.AddHttpContextAccessor();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins(Configuration["AllowedOrigins"].Split(' '))
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    }
+                );
+            });
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
@@ -53,7 +64,7 @@ namespace Server
                 app.UseSwaggerUI();
             }
 
-            app.UseCors(builder => builder.AllowAnyOrigin());
+            app.UseCors();
 
             app.UseCustomAuthorization();
 
