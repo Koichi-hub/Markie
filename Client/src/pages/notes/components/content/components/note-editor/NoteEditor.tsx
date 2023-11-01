@@ -1,12 +1,20 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect } from 'react';
 import styles from './NoteEditor.module.scss';
 import Markdown from 'marked-react';
+import { useAppDispatch, useAppSelector } from '../../../../../../store';
+import { initNoteContent, setNoteContent } from '../../../../notesSlice';
 
 export const NoteEditor = () => {
-  const [value, setValue] = useState('');
+  const dispatch = useAppDispatch();
+  const noteContent = useAppSelector(state => state.notes.noteContent);
 
-  const onChange = (e: ChangeEvent<HTMLTextAreaElement>) =>
-    setValue(e.target.value);
+  const onChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    dispatch(setNoteContent(e.target.value));
+  };
+
+  useEffect(() => {
+    dispatch(initNoteContent());
+  }, [dispatch]);
 
   return (
     <div className={styles['note-editor']}>
@@ -16,12 +24,12 @@ export const NoteEditor = () => {
           cols={30}
           rows={10}
           placeholder="Новая заметка"
-          value={value}
+          value={noteContent}
           onChange={onChange}></textarea>
       </div>
       <div className={styles['markdown-container']}>
         <div className={styles['markdown']}>
-          <Markdown value={value} />
+          <Markdown value={noteContent} />
         </div>
       </div>
     </div>

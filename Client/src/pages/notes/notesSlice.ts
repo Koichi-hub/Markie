@@ -21,6 +21,7 @@ export type NotesState = {
   tag?: TagDto | null;
   tags?: TagDto[] | null;
   note?: NoteDto | null;
+  noteContent: string;
   notes?: NoteDto[] | null;
   openAddTagToast?: boolean;
   openAddNoteToast?: boolean;
@@ -32,6 +33,7 @@ const initialState: NotesState = {
     name: '#Все заметки',
     notesCount: 0,
   },
+  noteContent: '',
   notes: [],
   tags: [],
   openAddTagToast: false,
@@ -152,6 +154,12 @@ export const notesSlice = createSlice({
     setNote: (state, { payload }: PayloadAction<NoteDto>) => {
       state.note = payload;
     },
+    initNoteContent: state => {
+      state.noteContent = state.note!.content;
+    },
+    setNoteContent: (state, { payload }: PayloadAction<string>) => {
+      state.noteContent = payload;
+    },
     resetNote: state => {
       state.note = null;
     },
@@ -218,6 +226,8 @@ export const notesSlice = createSlice({
 // actions
 export const {
   setNote,
+  initNoteContent,
+  setNoteContent,
   resetNote,
   setNotes,
   addNote,

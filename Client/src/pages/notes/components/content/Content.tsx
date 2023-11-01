@@ -2,10 +2,11 @@ import styles from './Content.module.scss';
 import { NoteCard } from './components/note-card';
 import { useAppDispatch, useAppSelector } from '../../../../store';
 import { useCallback, useMemo, useState } from 'react';
-import { NoteDto } from '../../../../models';
+import { ChangeNoteDto, NoteDto } from '../../../../models';
 import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
 import {
+  changeNoteAction,
   deleteNoteAction,
   setNote,
   setOpenAddNoteToast,
@@ -17,6 +18,7 @@ import { NoteEditor } from './components/note-editor';
 import { IconButton } from './components/icon-button';
 import { EditNote } from './components/edit-note';
 import { ConfirmDeletionNoteModal } from './components/confirm-deletion-note-modal';
+import { Button } from '../button';
 
 export const Content = () => {
   // hooks
@@ -24,6 +26,7 @@ export const Content = () => {
 
   // selectors
   const note = useAppSelector(state => state.notes.note);
+  const noteContent = useAppSelector(state => state.notes.noteContent);
   const tag = useAppSelector(state => state.notes.tag);
   const notes = useAppSelector(state => state.notes.notes);
   const openAddTagToast = useAppSelector(state => state.notes.openAddTagToast);
@@ -67,6 +70,16 @@ export const Content = () => {
 
   const onCloseConfirmDeletionNoteModal = () =>
     setOpenConfirmDeletionNoteModal(false);
+
+  const onSaveNote = useCallback(() => {
+    const changeNoteDto = {
+      ...note,
+      content: noteContent,
+      tagsGuids: note?.tags.map(t => t.guid),
+    } as ChangeNoteDto;
+
+    dispatch(changeNoteAction(changeNoteDto));
+  }, [dispatch, note, noteContent]);
 
   // render
   const renderNotes = useMemo(
@@ -120,10 +133,11 @@ export const Content = () => {
     );
   }, [note, tag?.name]);
 
-  const renderTagIconButton = useMemo(
+  const renderControls = useMemo(
     () =>
       note && (
         <div className={styles['buttons']}>
+          <Button color="grey-80" text="Сохранить" onClick={onSaveNote} />
           <IconButton
             src="/assets/icons/delete.svg"
             onClick={onOpenConfirmDeletionNoteModal}
@@ -140,14 +154,20 @@ export const Content = () => {
           />
         </div>
       ),
-    [note, onClickEditNoteTags, onDeleteNote, openConfirmDeletionNoteModal]
+    [
+      note,
+      onClickEditNoteTags,
+      onDeleteNote,
+      onSaveNote,
+      openConfirmDeletionNoteModal,
+    ]
   );
 
   return (
     <div className={styles['content']}>
       <div className={styles['header']}>
         <div className={styles['title']}>{renderTitle}</div>
-        {renderTagIconButton}
+        {renderControls}
       </div>
       {renderNotes}
       {renderNoteEditor}

@@ -3,6 +3,11 @@
 .button {
     padding    : $padding-8px $padding-16px;
     font-family: $font-family-arial;
+    transition : .2s;
+
+    &:active {
+        transform: scale(0.95);
+    }
 }
 
 .grey-0 {
