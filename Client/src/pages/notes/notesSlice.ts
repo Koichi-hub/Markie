@@ -182,6 +182,12 @@ export const notesSlice = createSlice({
     setOpenEditNoteToast: (state, { payload }: PayloadAction<boolean>) => {
       state.openEditNoteToast = payload;
     },
+    incrementBaseTagNotesCount: state => {
+      (state.baseTag as TagDto).notesCount++;
+    },
+    decrementBaseTagNotesCount: state => {
+      (state.baseTag as TagDto).notesCount--;
+    },
   },
   extraReducers: builder => {
     builder.addCase(createTag.fulfilled, (state, action) => {
@@ -226,6 +232,8 @@ export const {
   setOpenAddTagToast,
   setOpenAddNoteToast,
   setOpenEditNoteToast,
+  incrementBaseTagNotesCount,
+  decrementBaseTagNotesCount,
 } = notesSlice.actions;
 
 // middleware
@@ -257,6 +265,7 @@ createNoteListenerMiddleware.startListening({
 
     listenerApi.dispatch(addNote(note));
     listenerApi.dispatch(setTags(tags));
+    listenerApi.dispatch(incrementBaseTagNotesCount());
   },
 });
 
