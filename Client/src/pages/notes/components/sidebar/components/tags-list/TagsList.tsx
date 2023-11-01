@@ -3,10 +3,10 @@ import styles from './TagsList.module.scss';
 import { useAppDispatch, useAppSelector } from '../../../../../../store';
 import { useCallback, useEffect, useMemo } from 'react';
 import {
-  fetchNotes,
   fetchTags,
+  resetNote,
+  selectBaseTag,
   selectTagAction,
-  setTag,
 } from '../../../../notesSlice';
 import { TagDto } from '../../../../../../models';
 
@@ -14,19 +14,20 @@ export const TagsList = () => {
   const dispatch = useAppDispatch();
   const userGuid = useAppSelector(state => state.app.user?.guid as string);
   const baseTag = useAppSelector(state => state.notes.baseTag);
-  const note = useAppSelector(state => state.notes.note);
+  const tag = useAppSelector(state => state.notes.tag);
   const tags = useAppSelector(state => state.notes.tags);
 
   const onSelectBaseTag = useCallback(() => {
-    dispatch(fetchNotes(userGuid));
-    dispatch(setTag(baseTag as TagDto));
-  }, [baseTag, dispatch, userGuid]);
+    if (!tag?.guid) dispatch(resetNote());
+    else dispatch(selectBaseTag());
+  }, [dispatch, tag?.guid]);
 
   const onSelectTag = useCallback(
-    (tag: TagDto) => {
-      if (!note) dispatch(selectTagAction(tag));
+    (t: TagDto) => {
+      if (tag?.guid && tag.guid == t.guid) dispatch(resetNote());
+      else dispatch(selectTagAction(t));
     },
-    [dispatch, note]
+    [dispatch, tag]
   );
 
   useEffect(() => {

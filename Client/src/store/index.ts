@@ -5,7 +5,7 @@ import notesSlice, {
   createNoteListenerMiddleware,
   deleteNoteListenerMiddleware,
   selectBaseTagListenerMiddleware,
-  setTagListenerMiddleware,
+  selectTagListenerMiddleware,
 } from '../pages/notes/notesSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
@@ -21,7 +21,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     })
-      .prepend(setTagListenerMiddleware.middleware)
+      .prepend(selectTagListenerMiddleware.middleware)
       .prepend(createNoteListenerMiddleware.middleware)
       .prepend(changeNoteListenerMiddleware.middleware)
       .prepend(deleteNoteListenerMiddleware.middleware)

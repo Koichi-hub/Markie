@@ -41,7 +41,7 @@ export const AddTag = () => {
     if (!tagName) return;
 
     const createTagDto = {
-      name: tagName,
+      name: `#${tagName}`,
     } as CreateTagDto;
 
     dispatch(createTag({ userGuid, createTagDto }));

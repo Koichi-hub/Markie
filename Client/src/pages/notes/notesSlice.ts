@@ -237,8 +237,8 @@ export const {
 } = notesSlice.actions;
 
 // middleware
-export const setTagListenerMiddleware = createListenerMiddleware();
-setTagListenerMiddleware.startListening({
+export const selectTagListenerMiddleware = createListenerMiddleware();
+selectTagListenerMiddleware.startListening({
   actionCreator: selectTagAction,
   effect: async (action, listenerApi) => {
     listenerApi.cancelActiveListeners();
@@ -249,6 +249,24 @@ setTagListenerMiddleware.startListening({
 
     listenerApi.dispatch(setTag(action.payload));
     listenerApi.dispatch(setNotes(notes));
+    listenerApi.dispatch(resetNote());
+  },
+});
+
+export const selectBaseTagListenerMiddleware = createListenerMiddleware();
+selectBaseTagListenerMiddleware.startListening({
+  actionCreator: selectBaseTag,
+  effect: async (_action, listenerApi) => {
+    listenerApi.cancelActiveListeners();
+
+    const store = listenerApi.getState() as RootState;
+    const userGuid = store.app.user!.guid;
+    const baseTag = store.notes.baseTag;
+    const notes = await notesApi.fetchNotes(userGuid);
+
+    listenerApi.dispatch(setNotes(notes));
+    listenerApi.dispatch(setTag(baseTag as TagDto));
+    listenerApi.dispatch(resetNote());
   },
 });
 
@@ -301,22 +319,6 @@ deleteNoteListenerMiddleware.startListening({
     listenerApi.dispatch(deleteNote(note));
     listenerApi.dispatch(setTags(tags));
     listenerApi.dispatch(resetNote());
-  },
-});
-
-export const selectBaseTagListenerMiddleware = createListenerMiddleware();
-selectBaseTagListenerMiddleware.startListening({
-  actionCreator: selectBaseTag,
-  effect: async (_action, listenerApi) => {
-    listenerApi.cancelActiveListeners();
-
-    const store = listenerApi.getState() as RootState;
-    const userGuid = store.app.user!.guid;
-    const baseTag = store.notes.baseTag;
-    const notes = await notesApi.fetchNotes(userGuid);
-
-    listenerApi.dispatch(setNotes(notes));
-    listenerApi.dispatch(setTag(baseTag as TagDto));
   },
 });
 

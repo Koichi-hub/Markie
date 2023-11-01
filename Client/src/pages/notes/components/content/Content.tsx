@@ -1,21 +1,18 @@
 import styles from './Content.module.scss';
 import { NoteCard } from './components/note-card';
 import { useAppDispatch, useAppSelector } from '../../../../store';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useCallback, useMemo, useState } from 'react';
 import { NoteDto } from '../../../../models';
 import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
 import {
   deleteNoteAction,
-  resetNote,
   setNote,
   setOpenAddNoteToast,
   setOpenAddTagToast,
   setOpenEditNoteToast,
 } from '../../notesSlice';
 import { AddNote } from './components/add-note';
-import { routes } from '../../../../router';
 import { NoteEditor } from './components/note-editor';
 import { IconButton } from './components/icon-button';
 import { EditNote } from './components/edit-note';
@@ -23,8 +20,6 @@ import { ConfirmDeletionNoteModal } from './components/confirm-deletion-note-mod
 
 export const Content = () => {
   // hooks
-  const { noteGuid } = useParams();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   // selectors
@@ -54,9 +49,8 @@ export const Content = () => {
   const onClickNoteCard = useCallback(
     (note: NoteDto) => () => {
       dispatch(setNote(note));
-      navigate(`${routes.notes}/${note.guid}`);
     },
-    [dispatch, navigate]
+    [dispatch]
   );
 
   const onClickEditNoteTags = useCallback(() => {
@@ -148,15 +142,6 @@ export const Content = () => {
       ),
     [note, onClickEditNoteTags, onDeleteNote, openConfirmDeletionNoteModal]
   );
-
-  useEffect(() => {
-    if (!noteGuid) dispatch(resetNote());
-    else {
-      const note = notes?.find(n => n.guid === noteGuid);
-      if (note) dispatch(setNote(note));
-      else navigate(routes.notes);
-    }
-  }, [dispatch, navigate, noteGuid, notes]);
 
   return (
     <div className={styles['content']}>
