@@ -1,0 +1,1 @@
+export { ConfirmDeletionNoteModal } from './ConfirmDeletionNoteModal';

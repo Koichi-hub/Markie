@@ -37,6 +37,12 @@ namespace Server.Services
             return _mapper.Map<List<NoteDto>>(notes);
         }
 
+        public async Task<int> GetNotesCount(Guid userGuid)
+        {
+            var notesCount = await _databaseContext.Notes.CountAsync(n => n.UserGuid == userGuid);
+            return notesCount;
+        }
+
         public async Task<NoteDto?> GetNote(Guid userGuid, Guid noteGuid)
         {
             var note = await _databaseContext.Notes
@@ -71,13 +77,22 @@ namespace Server.Services
 
         public async Task<NoteDto?> ChangeNote(Guid userGuid, Guid noteGuid, ChangeNoteDto changeNoteDto)
         {
-            var note = await _databaseContext.Notes.FirstOrDefaultAsync(n => n.UserGuid == userGuid && n.Guid == noteGuid);
+            var note = await _databaseContext.Notes
+                .Include(n => n.Tags)
+                .FirstOrDefaultAsync(n => n.UserGuid == userGuid && n.Guid == noteGuid);
             if (note == null) return null;
 
             note.Name = changeNoteDto.Name;
             note.Content = changeNoteDto.Content;
 
-            _databaseContext.Notes.Update(note);
+            var tags = await _databaseContext.Tags.Where(t => changeNoteDto.TagsGuids.Contains(t.Guid)).ToListAsync();
+            var removeTagsList = note.Tags.Except(tags).ToList();
+            var addTagsList = tags.Except(note.Tags).ToList();
+            foreach (var t in addTagsList)
+                note.Tags.Add(t);
+            foreach (var t in removeTagsList)
+                note.Tags.Remove(t);
+
             await _databaseContext.SaveChangesAsync();
 
             return _mapper.Map<NoteDto>(note);

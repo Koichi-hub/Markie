@@ -5,24 +5,38 @@ import {
   createListenerMiddleware,
   createSlice,
 } from '@reduxjs/toolkit';
-import { CreateNoteDto, CreateTagDto, NoteDto, TagDto } from '../../models';
+import {
+  ChangeNoteDto,
+  CreateNoteDto,
+  CreateTagDto,
+  NoteDto,
+  TagDto,
+} from '../../models';
 import { notesApi, tagsApi } from '../../api/index';
 import { RootState } from '../../store';
 
 // state
 export type NotesState = {
+  baseTag: Partial<TagDto>;
   tag?: TagDto | null;
   tags?: TagDto[] | null;
+  note?: NoteDto | null;
   notes?: NoteDto[] | null;
   openAddTagToast?: boolean;
   openAddNoteToast?: boolean;
+  openEditNoteToast?: boolean;
 };
 
 const initialState: NotesState = {
+  baseTag: {
+    name: '#Все заметки',
+    notesCount: 0,
+  },
   notes: [],
   tags: [],
   openAddTagToast: false,
   openAddNoteToast: false,
+  openEditNoteToast: false,
 };
 
 // thunks
@@ -62,25 +76,43 @@ export const fetchTags = createAsyncThunk(
   }
 );
 
-export const createNote = createAsyncThunk(
-  'notesSlice/createNote',
-  async ({
-    userGuid,
-    createNoteDto,
-  }: {
-    userGuid: string;
-    createNoteDto: CreateNoteDto;
-  }) => {
-    const note = await notesApi.createNote(userGuid, createNoteDto);
-    return note;
+export const fetchNotes = createAsyncThunk(
+  'notesSlice/fetchNotes',
+  async (userGuid: string) => {
+    const notes = await notesApi.fetchNotes(userGuid);
+    return notes;
   }
 );
 
 export const fetchNotesByTag = createAsyncThunk(
-  'notesSlice/getNotes',
+  'notesSlice/fetchNotesByTag',
   async ({ userGuid, tagGuid }: { userGuid: string; tagGuid: string }) => {
     const notes = await notesApi.fetchNotesByTag(userGuid, tagGuid);
     return notes;
+  }
+);
+
+export const fetchNotesCount = createAsyncThunk(
+  'notesSlice/fetchNotesCount',
+  async ({ userGuid }: { userGuid: string }) => {
+    const notesCount = await notesApi.fetchNotesCount(userGuid);
+    return notesCount;
+  }
+);
+
+export const updateNote = createAsyncThunk(
+  'notesSlice/updateNote',
+  async ({
+    userGuid,
+    noteGuid,
+    changeNoteDto,
+  }: {
+    userGuid: string;
+    noteGuid: string;
+    changeNoteDto: ChangeNoteDto;
+  }) => {
+    const note = await notesApi.changeNote(userGuid, noteGuid, changeNoteDto);
+    return note;
   }
 );
 
@@ -88,6 +120,13 @@ export const fetchNotesByTag = createAsyncThunk(
 export const selectTagAction = createAction<TagDto>(
   'notesSlice/selectTagAction'
 );
+export const createNoteAction = createAction<CreateNoteDto>(
+  'notesSlice/createNoteAction'
+);
+export const changeNoteAction = createAction<ChangeNoteDto>(
+  'notesSlice/changeNoteAction'
+);
+export const deleteNoteAction = createAction('notesSlice/deleteNoteAction');
 
 // reducers
 export const notesSlice = createSlice({
@@ -109,8 +148,26 @@ export const notesSlice = createSlice({
     resetTags: state => {
       state.tags = [];
     },
+    setNote: (state, { payload }: PayloadAction<NoteDto>) => {
+      state.note = payload;
+    },
+    resetNote: state => {
+      state.note = null;
+    },
     setNotes: (state, { payload }: PayloadAction<NoteDto[]>) => {
       state.notes = payload;
+    },
+    addNote: (state, { payload }: PayloadAction<NoteDto>) => {
+      state.notes?.push(payload);
+    },
+    changeNote: (state, { payload }: PayloadAction<NoteDto>) => {
+      state.note = payload;
+
+      state.notes = state.notes?.filter(n => n.guid !== payload.guid);
+      state.notes = [payload, ...(state.notes ?? [])];
+    },
+    deleteNote: (state, { payload }: PayloadAction<NoteDto>) => {
+      state.notes = state.notes?.filter(n => n.guid !== payload.guid);
     },
     resetNotes: state => {
       state.notes = [];
@@ -118,11 +175,11 @@ export const notesSlice = createSlice({
     setOpenAddTagToast: (state, { payload }: PayloadAction<boolean>) => {
       state.openAddTagToast = payload;
     },
-    toggleOpenAddTagToast: state => {
-      state.openAddTagToast = !state.openAddTagToast;
-    },
     setOpenAddNoteToast: (state, { payload }: PayloadAction<boolean>) => {
       state.openAddNoteToast = payload;
+    },
+    setOpenEditNoteToast: (state, { payload }: PayloadAction<boolean>) => {
+      state.openEditNoteToast = payload;
     },
   },
   extraReducers: builder => {
@@ -137,18 +194,26 @@ export const notesSlice = createSlice({
     builder.addCase(fetchTags.fulfilled, (state, action) => {
       state.tags = action.payload;
     });
-    builder.addCase(createNote.fulfilled, (state, action) => {
-      state.notes?.push(action.payload);
+    builder.addCase(fetchNotes.fulfilled, (state, action) => {
+      state.notes = action.payload;
     });
     builder.addCase(fetchNotesByTag.fulfilled, (state, action) => {
       state.notes = action.payload;
+    });
+    builder.addCase(fetchNotesCount.fulfilled, (state, action) => {
+      state.baseTag.notesCount = action.payload;
     });
   },
 });
 
 // actions
 export const {
+  setNote,
+  resetNote,
   setNotes,
+  addNote,
+  changeNote,
+  deleteNote,
   resetNotes,
   setTag,
   resetTag,
@@ -156,8 +221,8 @@ export const {
   addTag,
   resetTags,
   setOpenAddTagToast,
-  toggleOpenAddTagToast,
   setOpenAddNoteToast,
+  setOpenEditNoteToast,
 } = notesSlice.actions;
 
 // middleware
@@ -173,6 +238,57 @@ setTagListenerMiddleware.startListening({
 
     listenerApi.dispatch(setTag(action.payload));
     listenerApi.dispatch(setNotes(notes));
+  },
+});
+
+export const createNoteListenerMiddleware = createListenerMiddleware();
+createNoteListenerMiddleware.startListening({
+  actionCreator: createNoteAction,
+  effect: async (action, listenerApi) => {
+    listenerApi.cancelActiveListeners();
+
+    const store = listenerApi.getState() as RootState;
+    const userGuid = store.app.user?.guid as string;
+    const note = await notesApi.createNote(userGuid, action.payload);
+    const tags = await tagsApi.fetchTags(userGuid);
+
+    listenerApi.dispatch(addNote(note));
+    listenerApi.dispatch(setTags(tags));
+  },
+});
+
+export const changeNoteListenerMiddleware = createListenerMiddleware();
+changeNoteListenerMiddleware.startListening({
+  actionCreator: changeNoteAction,
+  effect: async (action, listenerApi) => {
+    listenerApi.cancelActiveListeners();
+
+    const store = listenerApi.getState() as RootState;
+    const userGuid = store.app.user?.guid as string;
+    const noteGuid = store.notes.note?.guid as string;
+    const note = await notesApi.changeNote(userGuid, noteGuid, action.payload);
+    const tags = await tagsApi.fetchTags(userGuid);
+
+    listenerApi.dispatch(changeNote(note));
+    listenerApi.dispatch(setTags(tags));
+  },
+});
+
+export const deleteNoteListenerMiddleware = createListenerMiddleware();
+changeNoteListenerMiddleware.startListening({
+  actionCreator: deleteNoteAction,
+  effect: async (_action, listenerApi) => {
+    listenerApi.cancelActiveListeners();
+
+    const store = listenerApi.getState() as RootState;
+    const userGuid = store.app.user?.guid as string;
+    const noteGuid = store.notes.note?.guid as string;
+    const note = await notesApi.deleteNote(userGuid, noteGuid);
+    const tags = await tagsApi.fetchTags(userGuid);
+
+    listenerApi.dispatch(deleteNote(note));
+    listenerApi.dispatch(setTags(tags));
+    listenerApi.dispatch(resetNote());
   },
 });
 

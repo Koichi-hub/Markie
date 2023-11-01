@@ -28,33 +28,17 @@ namespace Server.Middlewares
                 }
 
                 var accessToken = context.Request.Cookies["access_token"];
-                if (accessToken == null)
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return;
-                }
+                if (accessToken == null) throw new Exception();
 
                 var sessionGuid = jWTService.IsValidAccessToken(accessToken);
-                if (sessionGuid == null)
-                {
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                    return;
-                }
+                if (sessionGuid == null) throw new Exception();
 
                 var session = await databaseContext.Sessions
                     .FirstOrDefaultAsync(s => s.Guid == Guid.Parse(sessionGuid));
-                if (session == null)
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return;
-                }
+                if (session == null) throw new Exception();
 
                 var isUserExists = await databaseContext.Users.AnyAsync(u => u.Guid == session.UserGuid);
-                if (!isUserExists)
-                {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    return;
-                }
+                if (!isUserExists) throw new Exception();
 
                 var user = new GenericPrincipal(new GenericIdentity(session.UserGuid.ToString()), new string[] { RoleEnum.User.ToString() });
                 context.User = user;
@@ -63,7 +47,7 @@ namespace Server.Middlewares
             }   
             catch (Exception)
             {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
         }

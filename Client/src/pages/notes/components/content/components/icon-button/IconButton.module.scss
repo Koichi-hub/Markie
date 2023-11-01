@@ -1,0 +1,20 @@
+@import '#/_styles.scss';
+
+.icon-button {
+    display        : inline-flex;
+    justify-content: center;
+    align-items    : center;
+    width          : $icon-width-30px;
+    height         : $icon-height-30px;
+    cursor         : pointer;
+
+    &:hover {
+        background-color: $grey-0;
+        border-radius   : $icon-width-30px;
+    }
+
+    img {
+        width : $icon-width-20px;
+        height: $icon-height-20px;
+    }
+}

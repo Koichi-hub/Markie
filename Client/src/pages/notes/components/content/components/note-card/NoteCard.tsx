@@ -20,6 +20,14 @@ export const NoteCard = ({ note, onClick }: Props) => {
     return dayjs(note.createdAt).format('DD/MM/YYYY');
   }, [note.createdAt]);
 
+  const renderTags = useMemo(() => {
+    return note.tags.map(tag => (
+      <div key={tag.guid} className={styles['tags-list__item']}>
+        {tag.name}
+      </div>
+    ));
+  }, [note.tags]);
+
   return (
     <div className={styles['note-card']}>
       <div className={styles['note-card-top']}>
@@ -31,6 +39,12 @@ export const NoteCard = ({ note, onClick }: Props) => {
         </div>
       </div>
       <div className={styles['note-card-bottom']}>
+        <div className={styles['tags-list-container']}>
+          <div className={styles['tags-list']}>
+            <div className={styles['tags-list__caption']}>Теги: </div>
+            {renderTags}
+          </div>
+        </div>
         <div className={styles['date']}>
           <div className={styles['date-item']}>
             <span>Дата изменения:</span>

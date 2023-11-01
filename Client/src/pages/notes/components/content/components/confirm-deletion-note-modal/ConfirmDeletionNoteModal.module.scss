@@ -1,0 +1,33 @@
+@import '#/_styles.scss';
+
+.modal {
+    display       : flex;
+    flex-direction: column;
+    max-height    : 500px;
+    width         : 800px;
+    background    : $white;
+    border        : 2px solid $grey-80;
+}
+
+.title {
+    min-height   : 50px;
+    padding      : $padding-16px;
+    font-size    : $font-size-20px;
+    border-bottom: 2px solid $grey-80;
+    background   : $grey-80;
+    color        : $white;
+}
+
+.content {
+    min-height: 80px;
+    padding   : $padding-16px;
+}
+
+.controls {
+    display        : flex;
+    justify-content: flex-end;
+    gap            : $gap-16px;
+    min-height     : 50px;
+    padding        : $padding-4px;
+    border-top     : 2px solid $grey-80;
+}

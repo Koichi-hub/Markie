@@ -173,6 +173,18 @@ namespace Server.Controllers
             return Ok(notes);
         }
 
+        [HttpGet("{userGuid}/notes/count")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetNotesCount([FromRoute] Guid userGuid)
+        {
+            if (authorizedUserGuid != userGuid) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var notesCount = await _noteService.GetNotesCount(userGuid);
+            return Ok(notesCount);
+        }
+
         [HttpGet("{userGuid}/notes/{noteGuid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -15,9 +15,9 @@
     }
 
     &-bottom {
-        display    : flex;
-        flex-grow  : 1;
-        align-items: flex-end;
+        display       : flex;
+        flex-direction: column;
+        flex-grow     : 1;
     }
 }
 
@@ -30,6 +30,35 @@
 .title {
     font-weight: 500;
     font-size  : 20px;
+}
+
+.tags-list-container {
+    display    : flex;
+    flex-grow  : 1;
+    align-items: flex-end;
+    padding    : $padding-16px 0;
+}
+
+.tags-list {
+    display  : flex;
+    gap      : $gap-8px;
+    flex-wrap: wrap;
+
+    &__caption {
+        display    : flex;
+        align-items: center;
+    }
+
+    &__item {
+        padding      : $padding-8px $padding-16px;
+        font-size    : $font-size-16px;
+        white-space  : nowrap;
+        border-radius: $border-radius-15px;
+        color        : $white;
+        background   : $grey-80;
+        cursor       : pointer;
+        user-select  : none;
+    }
 }
 
 .date {

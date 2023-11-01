@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Button } from '../../../button';
-import styles from './AddNote.module.scss';
-import { createNoteAction, setOpenAddNoteToast } from '../../../../notesSlice';
-import { Input } from '../../../input';
-import { CreateNoteDto, TagDto } from '../../../../../../models';
-import { TagsList } from '../tags-list';
 import { useAppDispatch, useAppSelector } from '../../../../../../store';
+import { TagsList } from '../tags-list';
+import styles from './EditNote.module.scss';
+import { ChangeNoteDto, TagDto } from '../../../../../../models';
+import { Button } from '../../../button';
+import { changeNoteAction, setOpenEditNoteToast } from '../../../../notesSlice';
+import { Input } from '../../../input';
 
-export const AddNote = () => {
+export const EditNote = () => {
   const dispatch = useAppDispatch();
-  const tag = useAppSelector(state => state.notes.tag);
+
+  const note = useAppSelector(state => state.notes.note);
   const tags = useAppSelector(state => state.notes.tags);
 
   const [noteName, setNoteName] = useState('');
@@ -26,33 +27,34 @@ export const AddNote = () => {
     [selectedTags]
   );
 
-  const onCreate = useCallback(() => {
-    if (!noteName) return;
-
-    const createNoteDto = {
+  const onSave = useCallback(() => {
+    const changeNoteDto = {
+      ...note,
       name: noteName,
-      content: '',
       tagsGuids: selectedTags.map(t => t.guid),
-    } as CreateNoteDto;
+    } as ChangeNoteDto;
 
-    dispatch(createNoteAction(createNoteDto));
-  }, [dispatch, noteName, selectedTags]);
+    dispatch(changeNoteAction(changeNoteDto));
+  }, [dispatch, note, noteName, selectedTags]);
 
   const onClose = useCallback(
-    () => dispatch(setOpenAddNoteToast(false)),
+    () => dispatch(setOpenEditNoteToast(false)),
     [dispatch]
   );
 
   useEffect(() => {
-    if (tag) setSelectedTags([tag]);
-  }, [tag]);
+    if (note) {
+      setNoteName(note.name);
+      setSelectedTags(note.tags);
+    }
+  }, [note]);
 
   return (
     <div className={styles['container']}>
       <div className={styles['controls']}>
         <span className={styles['title']}>Название заметки:</span>
         <Input value={noteName} onChange={setNoteName} />
-        <Button text="Создать" color="grey-80" onClick={onCreate} />
+        <Button text="Сохранить" color="grey-80" onClick={onSave} />
         <Button text="Закрыть" color="grey-80" onClick={onClose} />
       </div>
       <div className={styles['tags']}>

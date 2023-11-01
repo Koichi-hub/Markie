@@ -31,10 +31,21 @@
     }
 }
 
-.tag-title {
+.header {
+    display         : flex;
+    align-items     : center;
+    justify-content : space-between;
+    flex-shrink     : 0;
     height          : $tag-title-height;
-    padding         : $padding-16px;
+    padding         : 0 $padding-16px;
     background-color: $white;
+}
+
+.title {}
+
+.buttons {
+    display: flex;
+    gap    : $gap-8px;
 }
 
 .notes-cards-list {

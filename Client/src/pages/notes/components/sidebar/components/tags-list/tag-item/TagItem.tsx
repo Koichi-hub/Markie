@@ -18,7 +18,7 @@ export const TagItem = ({ tag, onSelectTag }: Props) => {
     [dispatch]
   );
 
-  const onSelect = useCallback(() => onSelectTag(tag!), [onSelectTag, tag]);
+  const onSelect = useCallback(() => onSelectTag(tag), [onSelectTag, tag]);
 
   return (
     <div className={styles['tag']} onClick={onSelect}>

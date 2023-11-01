@@ -1,6 +1,8 @@
 import { AnyAction, ThunkDispatch, configureStore } from '@reduxjs/toolkit';
 import appReducer from './appSlice';
 import notesSlice, {
+  changeNoteListenerMiddleware,
+  createNoteListenerMiddleware,
   setTagListenerMiddleware,
 } from '../pages/notes/notesSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
@@ -16,7 +18,10 @@ export const store = configureStore({
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).prepend(setTagListenerMiddleware.middleware),
+    })
+      .prepend(setTagListenerMiddleware.middleware)
+      .prepend(createNoteListenerMiddleware.middleware)
+      .prepend(changeNoteListenerMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

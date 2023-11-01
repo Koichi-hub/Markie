@@ -1,19 +1,25 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Button } from '../button';
 import { TagsList } from './components/tags-list';
 import styles from './Sidebar.module.scss';
-import { RootState } from '../../../../store';
-import { toggleOpenAddTagToast } from '../../notesSlice';
+import { RootState, useAppDispatch } from '../../../../store';
+import { fetchNotesCount, setOpenAddTagToast } from '../../notesSlice';
+import { useEffect } from 'react';
 
 export const Sidebar = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const user = useSelector((state: RootState) => state.app.user);
 
   const onEditTags = () => {
-    dispatch(toggleOpenAddTagToast());
+    dispatch(setOpenAddTagToast(true));
   };
+
   const onExit = () => {};
+
+  useEffect(() => {
+    if (user) dispatch(fetchNotesCount({ userGuid: user?.guid }));
+  }, [dispatch, user]);
 
   return (
     <div className={styles['sidebar']}>

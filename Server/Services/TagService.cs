@@ -20,7 +20,9 @@ namespace Server.Services
 
         public async Task<IList<TagDto>?> GetTags(Guid userGuid)
         {
-            var tags = await _databaseContext.Tags.Where(t => t.UserGuid == userGuid).ToListAsync();
+            var tags = await _databaseContext.Tags
+                .Include(t => t.Notes)
+                .Where(t => t.UserGuid == userGuid).ToListAsync();
             return _mapper.Map<List<TagDto>>(tags);
         }
 
@@ -41,7 +43,9 @@ namespace Server.Services
 
         public async Task<TagDto?> ChangeTag(Guid userGuid, Guid tagGuid, ChangeTagDto changeTagDto)
         {
-            var tag = await _databaseContext.Tags.FirstOrDefaultAsync(t => t.UserGuid == userGuid && t.Guid == tagGuid);
+            var tag = await _databaseContext.Tags
+                .Include(t => t.Notes)
+                .FirstOrDefaultAsync(t => t.UserGuid == userGuid && t.Guid == tagGuid);
             if (tag == null) return null;
 
             tag.Name = changeTagDto.Name;

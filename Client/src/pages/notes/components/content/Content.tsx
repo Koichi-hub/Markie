@@ -1,49 +1,83 @@
-import { useDispatch, useSelector } from 'react-redux';
 import styles from './Content.module.scss';
 import { NoteCard } from './components/note-card';
-import { RootState } from '../../../../store';
-import { useCallback, useMemo } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../../store';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { NoteDto } from '../../../../models';
 import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
-import { setOpenAddNoteToast, setOpenAddTagToast } from '../../notesSlice';
+import {
+  deleteNoteAction,
+  resetNote,
+  setNote,
+  setOpenAddNoteToast,
+  setOpenAddTagToast,
+  setOpenEditNoteToast,
+} from '../../notesSlice';
 import { AddNote } from './components/add-note';
 import { routes } from '../../../../router';
 import { NoteEditor } from './components/note-editor';
+import { IconButton } from './components/icon-button';
+import { EditNote } from './components/edit-note';
+import { ConfirmDeletionNoteModal } from './components/confirm-deletion-note-modal';
 
 export const Content = () => {
   // hooks
   const { noteGuid } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // selectors
-  const tag = useSelector((state: RootState) => state.notes.tag);
-  const notes = useSelector((state: RootState) => state.notes.notes);
-  const openAddTagToast = useSelector(
-    (state: RootState) => state.notes.openAddTagToast
+  const note = useAppSelector(state => state.notes.note);
+  const tag = useAppSelector(state => state.notes.tag);
+  const notes = useAppSelector(state => state.notes.notes);
+  const openAddTagToast = useAppSelector(state => state.notes.openAddTagToast);
+  const openAddNoteToast = useAppSelector(
+    state => state.notes.openAddNoteToast
   );
-  const openAddNoteToast = useSelector(
-    (state: RootState) => state.notes.openAddNoteToast
+  const openEditNoteToast = useAppSelector(
+    state => state.notes.openEditNoteToast
   );
+
+  // state
+  const [openConfirmDeletionNoteModal, setOpenConfirmDeletionNoteModal] =
+    useState(false);
 
   // variables
   const ref = useClickAway(() => {
     dispatch(setOpenAddTagToast(false));
     dispatch(setOpenAddNoteToast(false));
+    dispatch(setOpenEditNoteToast(false));
   });
 
   // events
   const onClickNoteCard = useCallback(
-    (note: NoteDto) => () => navigate(`${routes.notes}/${note.guid}`),
-    [navigate]
+    (note: NoteDto) => () => {
+      dispatch(setNote(note));
+      navigate(`${routes.notes}/${note.guid}`);
+    },
+    [dispatch, navigate]
   );
+
+  const onClickEditNoteTags = useCallback(() => {
+    dispatch(setOpenEditNoteToast(true));
+  }, [dispatch]);
+
+  const onDeleteNote = useCallback(() => {
+    dispatch(deleteNoteAction());
+    setOpenConfirmDeletionNoteModal(false);
+  }, [dispatch]);
+
+  const onOpenConfirmDeletionNoteModal = () =>
+    setOpenConfirmDeletionNoteModal(true);
+
+  const onCloseConfirmDeletionNoteModal = () =>
+    setOpenConfirmDeletionNoteModal(false);
 
   // render
   const renderNotes = useMemo(
     () =>
-      !noteGuid && (
+      !note && (
         <div className={styles['notes-cards-list']}>
           {notes?.map(note => (
             <NoteCard
@@ -54,16 +88,14 @@ export const Content = () => {
           ))}
         </div>
       ),
-    [noteGuid, notes, onClickNoteCard]
+    [note, notes, onClickNoteCard]
   );
 
-  const renderNoteEditor = useMemo(
-    () => noteGuid && <NoteEditor />,
-    [noteGuid]
-  );
+  const renderNoteEditor = useMemo(() => note && <NoteEditor />, [note]);
 
   const renderToast = useMemo(() => {
-    const toastActive = openAddTagToast || openAddNoteToast;
+    const toastActive =
+      openAddTagToast || openAddNoteToast || openEditNoteToast;
     const toastActiveClassName = toastActive
       ? styles['content__toast_active']
       : '';
@@ -79,14 +111,59 @@ export const Content = () => {
           )}>
           {openAddTagToast && <AddTag />}
           {openAddNoteToast && <AddNote />}
+          {openEditNoteToast && <EditNote />}
         </div>
       </>
     );
-  }, [openAddNoteToast, openAddTagToast, ref]);
+  }, [openAddNoteToast, openAddTagToast, openEditNoteToast, ref]);
+
+  const renderTitle = useMemo(() => {
+    return (
+      <>
+        <span>{tag?.name}</span>
+        {note ? <span> | {note?.name}</span> : ''}
+      </>
+    );
+  }, [note, tag?.name]);
+
+  const renderTagIconButton = useMemo(
+    () =>
+      note && (
+        <div className={styles['buttons']}>
+          <IconButton
+            src="/assets/icons/delete.svg"
+            onClick={onOpenConfirmDeletionNoteModal}
+          />
+          <ConfirmDeletionNoteModal
+            open={openConfirmDeletionNoteModal}
+            onDelete={onDeleteNote}
+            onCancel={onCloseConfirmDeletionNoteModal}
+            note={note}
+          />
+          <IconButton
+            src="/assets/icons/edit.svg"
+            onClick={onClickEditNoteTags}
+          />
+        </div>
+      ),
+    [note, onClickEditNoteTags, onDeleteNote, openConfirmDeletionNoteModal]
+  );
+
+  useEffect(() => {
+    if (!noteGuid) dispatch(resetNote());
+    else {
+      const note = notes?.find(n => n.guid === noteGuid);
+      if (note) dispatch(setNote(note));
+      else navigate(routes.notes);
+    }
+  }, [dispatch, navigate, noteGuid, notes]);
 
   return (
     <div className={styles['content']}>
-      <div className={styles['tag-title']}>{tag?.name}</div>
+      <div className={styles['header']}>
+        <div className={styles['title']}>{renderTitle}</div>
+        {renderTagIconButton}
+      </div>
       {renderNotes}
       {renderNoteEditor}
       {renderToast}
