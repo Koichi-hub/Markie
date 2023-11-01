@@ -7,17 +7,26 @@
     padding        : $padding-16px;
     background     : $grey-0;
     cursor         : pointer;
-}
 
-.text {
-    white-space  : nowrap;
-    overflow     : hidden;
-    text-overflow: ellipsis;
-    cursor       : auto;
-}
+    &_selected {
+        background: $grey-80;
+        color     : $white;
 
-.right-part {
-    display    : flex;
-    align-items: center;
-    gap        : $gap-8px;
+        .tag__text {}
+
+        .tag__right-part {}
+    }
+
+    &__text {
+        white-space  : nowrap;
+        overflow     : hidden;
+        text-overflow: ellipsis;
+        cursor       : auto;
+    }
+
+    &__right-part {
+        display    : flex;
+        align-items: center;
+        gap        : $gap-8px;
+    }
 }

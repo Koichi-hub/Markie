@@ -139,6 +139,9 @@ export const notesSlice = createSlice({
     setTag: (state, { payload }: PayloadAction<TagDto>) => {
       state.tag = payload;
     },
+    setTagToBaseTag: state => {
+      state.tag = state.baseTag as TagDto;
+    },
     resetTag: state => {
       state.tag = null;
     },
@@ -235,6 +238,7 @@ export const {
   deleteNote,
   resetNotes,
   setTag,
+  setTagToBaseTag,
   resetTag,
   setTags,
   addTag,
@@ -271,11 +275,10 @@ selectBaseTagListenerMiddleware.startListening({
 
     const store = listenerApi.getState() as RootState;
     const userGuid = store.app.user!.guid;
-    const baseTag = store.notes.baseTag;
     const notes = await notesApi.fetchNotes(userGuid);
 
     listenerApi.dispatch(setNotes(notes));
-    listenerApi.dispatch(setTag(baseTag as TagDto));
+    listenerApi.dispatch(setTagToBaseTag());
     listenerApi.dispatch(resetNote());
   },
 });

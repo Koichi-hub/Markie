@@ -36,15 +36,24 @@ export const TagsList = () => {
 
   const renderTags = useMemo(
     () =>
-      tags?.map((tag, index) => (
-        <TagItem key={index} tag={tag} onSelectTag={onSelectTag} />
+      tags?.map((t, index) => (
+        <TagItem
+          key={index}
+          tag={t}
+          onSelectTag={onSelectTag}
+          selected={t.guid === tag?.guid}
+        />
       )),
-    [onSelectTag, tags]
+    [onSelectTag, tag?.guid, tags]
   );
 
   return (
     <div className={styles['tags']}>
-      <TagItem tag={baseTag as TagDto} onSelectTag={onSelectBaseTag} />
+      <TagItem
+        tag={baseTag as TagDto}
+        onSelectTag={onSelectBaseTag}
+        selected={!tag?.guid}
+      />
       {renderTags}
     </div>
   );

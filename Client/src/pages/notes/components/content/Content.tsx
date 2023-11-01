@@ -27,7 +27,6 @@ export const Content = () => {
   // selectors
   const note = useAppSelector(state => state.notes.note);
   const noteContent = useAppSelector(state => state.notes.noteContent);
-  const tag = useAppSelector(state => state.notes.tag);
   const notes = useAppSelector(state => state.notes.notes);
   const openAddTagToast = useAppSelector(state => state.notes.openAddTagToast);
   const openAddNoteToast = useAppSelector(
@@ -125,13 +124,8 @@ export const Content = () => {
   }, [openAddNoteToast, openAddTagToast, openEditNoteToast, ref]);
 
   const renderTitle = useMemo(() => {
-    return (
-      <>
-        <span>{tag?.name}</span>
-        {note ? <span> | {note?.name}</span> : ''}
-      </>
-    );
-  }, [note, tag?.name]);
+    return note ? <span> {note?.name}</span> : '';
+  }, [note]);
 
   const renderControls = useMemo(
     () =>

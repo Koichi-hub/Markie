@@ -8,9 +8,10 @@ import { useAppDispatch } from '../../../../../../../store';
 type Props = {
   tag: TagDto;
   onSelectTag: (tag: TagDto) => void;
+  selected?: boolean;
 };
 
-export const TagItem = ({ tag, onSelectTag }: Props) => {
+export const TagItem = ({ tag, onSelectTag, selected }: Props) => {
   const dispatch = useAppDispatch();
 
   const onCreateNote = useCallback(
@@ -21,10 +22,14 @@ export const TagItem = ({ tag, onSelectTag }: Props) => {
   const onSelect = useCallback(() => onSelectTag(tag), [onSelectTag, tag]);
 
   return (
-    <div className={styles['tag']} onClick={onSelect}>
-      <span className={styles['text']}>{tag?.name}</span>
+    <div
+      className={[styles['tag'], selected ? styles['tag_selected'] : ''].join(
+        ' '
+      )}
+      onClick={onSelect}>
+      <span className={styles['tag__text']}>{tag?.name}</span>
 
-      <div className={styles['right-part']}>
+      <div className={styles['tag__right-part']}>
         <span>{tag.notesCount}</span>
         <IconButton src="/assets/icons/add.svg" onClick={onCreateNote} />
       </div>
