@@ -3,6 +3,8 @@ import appReducer from './appSlice';
 import notesSlice, {
   changeNoteListenerMiddleware,
   createNoteListenerMiddleware,
+  deleteNoteListenerMiddleware,
+  selectBaseTagListenerMiddleware,
   setTagListenerMiddleware,
 } from '../pages/notes/notesSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
@@ -21,7 +23,9 @@ export const store = configureStore({
     })
       .prepend(setTagListenerMiddleware.middleware)
       .prepend(createNoteListenerMiddleware.middleware)
-      .prepend(changeNoteListenerMiddleware.middleware),
+      .prepend(changeNoteListenerMiddleware.middleware)
+      .prepend(deleteNoteListenerMiddleware.middleware)
+      .prepend(selectBaseTagListenerMiddleware.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

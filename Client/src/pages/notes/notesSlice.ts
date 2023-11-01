@@ -127,6 +127,7 @@ export const changeNoteAction = createAction<ChangeNoteDto>(
   'notesSlice/changeNoteAction'
 );
 export const deleteNoteAction = createAction('notesSlice/deleteNoteAction');
+export const selectBaseTag = createAction('notesSlice/selectBaseTag');
 
 // reducers
 export const notesSlice = createSlice({
@@ -277,7 +278,7 @@ changeNoteListenerMiddleware.startListening({
 });
 
 export const deleteNoteListenerMiddleware = createListenerMiddleware();
-changeNoteListenerMiddleware.startListening({
+deleteNoteListenerMiddleware.startListening({
   actionCreator: deleteNoteAction,
   effect: async (_action, listenerApi) => {
     listenerApi.cancelActiveListeners();
@@ -291,6 +292,22 @@ changeNoteListenerMiddleware.startListening({
     listenerApi.dispatch(deleteNote(note));
     listenerApi.dispatch(setTags(tags));
     listenerApi.dispatch(resetNote());
+  },
+});
+
+export const selectBaseTagListenerMiddleware = createListenerMiddleware();
+selectBaseTagListenerMiddleware.startListening({
+  actionCreator: selectBaseTag,
+  effect: async (_action, listenerApi) => {
+    listenerApi.cancelActiveListeners();
+
+    const store = listenerApi.getState() as RootState;
+    const userGuid = store.app.user!.guid;
+    const baseTag = store.notes.baseTag;
+    const notes = await notesApi.fetchNotes(userGuid);
+
+    listenerApi.dispatch(setNotes(notes));
+    listenerApi.dispatch(setTag(baseTag as TagDto));
   },
 });
 

@@ -4,6 +4,7 @@ import styles from './AddTag.module.scss';
 import {
   createTag,
   deleteTags,
+  selectBaseTag,
   setOpenAddTagToast,
 } from '../../../../notesSlice';
 import { Input } from '../../../input';
@@ -52,6 +53,7 @@ export const AddTag = () => {
     dispatch(
       deleteTags({ userGuid, tagsGuids: selectedTags.map(t => t.guid) })
     );
+    dispatch(selectBaseTag());
     setSelectedTags([]);
   }, [dispatch, selectedTags, userGuid]);
 
