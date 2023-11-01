@@ -185,6 +185,8 @@ export const notesSlice = createSlice({
   extraReducers: builder => {
     builder.addCase(createTag.fulfilled, (state, action) => {
       state.tags?.push(action.payload);
+      state.tag = action.payload;
+      state.notes = [];
     });
     builder.addCase(deleteTags.fulfilled, (state, action) => {
       state.tags = state.tags?.filter(
