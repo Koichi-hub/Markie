@@ -44,7 +44,7 @@ export const AddNote = () => {
   );
 
   useEffect(() => {
-    if (tag) setSelectedTags([tag]);
+    if (tag?.guid) setSelectedTags([tag]);
   }, [tag]);
 
   return (
