@@ -44,8 +44,9 @@
 .title {}
 
 .buttons {
-    display: flex;
-    gap    : $gap-8px;
+    display    : flex;
+    align-items: center;
+    gap        : $gap-8px;
 }
 
 .notes-cards-list {

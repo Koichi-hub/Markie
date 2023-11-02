@@ -3,7 +3,11 @@ import { Button } from '../button';
 import { TagsList } from './components/tags-list';
 import styles from './Sidebar.module.scss';
 import { RootState, useAppDispatch } from '../../../../store';
-import { fetchNotesCount, setOpenAddTagToast } from '../../notesSlice';
+import {
+  fetchNotes,
+  fetchNotesCount,
+  setOpenAddTagToast,
+} from '../../notesSlice';
 import { useEffect } from 'react';
 
 export const Sidebar = () => {
@@ -18,7 +22,10 @@ export const Sidebar = () => {
   const onExit = () => {};
 
   useEffect(() => {
-    if (user) dispatch(fetchNotesCount({ userGuid: user?.guid }));
+    if (user) {
+      dispatch(fetchNotesCount({ userGuid: user?.guid }));
+      dispatch(fetchNotes(user?.guid));
+    }
   }, [dispatch, user]);
 
   return (

@@ -31,7 +31,7 @@ export const TagsList = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchTags(userGuid));
+    if (userGuid) dispatch(fetchTags(userGuid));
   }, [dispatch, userGuid]);
 
   const renderTags = useMemo(
