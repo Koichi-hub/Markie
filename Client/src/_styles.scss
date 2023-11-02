@@ -45,6 +45,9 @@ $header-height   : 50px;
 
 // mixins
 @mixin scrollbar {
+    scrollbar-color: $grey-0 $white;
+    scrollbar-width: thin;
+
     &::-webkit-scrollbar {
         width: 10px;
     }

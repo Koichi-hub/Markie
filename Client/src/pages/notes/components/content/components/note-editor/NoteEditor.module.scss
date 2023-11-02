@@ -21,6 +21,8 @@
         resize    : none;
         border    : none;
         outline   : none;
+        @include scrollbar;
+        scrollbar-color: $grey-80 $white;
     }
 }
 
@@ -30,6 +32,8 @@
     height    : 100%;
     width     : 100%;
     overflow-y: auto;
+    @include scrollbar;
+    scrollbar-color: $grey-80 $white;
 
     .markdown {
         all      : revert;
