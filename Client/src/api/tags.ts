@@ -6,8 +6,8 @@ export const createTag = async (
   createTagDto: CreateTagDto
 ): Promise<TagDto> => {
   const instance = await getAxiosInstance();
-  const response = await instance.post(`${userGuid}/tags`, createTagDto);
-  return response.data;
+  const response = await instance?.post(`${userGuid}/tags`, createTagDto);
+  return response?.data;
 };
 
 export const deleteTag = async (
@@ -15,8 +15,8 @@ export const deleteTag = async (
   tagGuid: string
 ): Promise<TagDto> => {
   const instance = await getAxiosInstance();
-  const response = await instance.delete(`${userGuid}/tags/${tagGuid}`);
-  return response.data;
+  const response = await instance?.delete(`${userGuid}/tags/${tagGuid}`);
+  return response?.data;
 };
 
 export const deleteTags = async (
@@ -24,15 +24,15 @@ export const deleteTags = async (
   tagsGuids: string[]
 ): Promise<TagDto[]> => {
   const instance = await getAxiosInstance();
-  const response = await instance.post(
+  const response = await instance?.post(
     `${userGuid}/tags/delete-some`,
     tagsGuids
   );
-  return response.data;
+  return response?.data;
 };
 
 export const fetchTags = async (userGuid: string): Promise<TagDto[]> => {
   const instance = await getAxiosInstance();
-  const response = await instance.get(`${userGuid}/tags`);
-  return response.data;
+  const response = await instance?.get(`${userGuid}/tags`);
+  return response?.data;
 };

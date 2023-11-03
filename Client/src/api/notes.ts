@@ -6,14 +6,14 @@ export const createNote = async (
   createNoteDto: CreateNoteDto
 ): Promise<NoteDto> => {
   const instance = await getAxiosInstance();
-  const response = await instance.post(`${userGuid}/notes`, createNoteDto);
-  return response.data;
+  const response = await instance?.post(`${userGuid}/notes`, createNoteDto);
+  return response?.data;
 };
 
 export const fetchNotes = async (userGuid: string): Promise<NoteDto[]> => {
   const instance = await getAxiosInstance();
-  const response = await instance.get(`${userGuid}/notes`);
-  return response.data;
+  const response = await instance?.get(`${userGuid}/notes`);
+  return response?.data;
 };
 
 export const fetchNotesByTag = async (
@@ -21,14 +21,14 @@ export const fetchNotesByTag = async (
   tagGuid: string
 ): Promise<NoteDto[]> => {
   const instance = await getAxiosInstance();
-  const response = await instance.get(`${userGuid}/tags/${tagGuid}/notes`);
-  return response.data;
+  const response = await instance?.get(`${userGuid}/tags/${tagGuid}/notes`);
+  return response?.data;
 };
 
 export const fetchNotesCount = async (userGuid: string): Promise<number> => {
   const instance = await getAxiosInstance();
-  const response = await instance.get(`${userGuid}/notes/count`);
-  return response.data;
+  const response = await instance?.get(`${userGuid}/notes/count`);
+  return response?.data;
 };
 
 export const changeNote = async (
@@ -37,11 +37,11 @@ export const changeNote = async (
   changeNoteDto: ChangeNoteDto
 ): Promise<NoteDto> => {
   const instance = await getAxiosInstance();
-  const response = await instance.put(
+  const response = await instance?.put(
     `${userGuid}/notes/${noteGuid}`,
     changeNoteDto
   );
-  return response.data;
+  return response?.data;
 };
 
 export const deleteNote = async (
@@ -49,6 +49,6 @@ export const deleteNote = async (
   noteGuid: string
 ): Promise<NoteDto> => {
   const instance = await getAxiosInstance();
-  const response = await instance.delete(`${userGuid}/notes/${noteGuid}`);
-  return response.data;
+  const response = await instance?.delete(`${userGuid}/notes/${noteGuid}`);
+  return response?.data;
 };

@@ -55,10 +55,11 @@ export const Auth = () => {
           authViaVK(code);
           break;
         default:
+          navigate(routes.notFound);
           break;
       }
     }
-  }, [authViaGoogle, authViaVK, searchParams, variant]);
+  }, [authViaGoogle, authViaVK, navigate, searchParams, variant]);
 
   return (
     <div className={styles['auth']}>

@@ -11,6 +11,7 @@ export const getAxiosInstance = async () => {
   if (!isValidAccessToken(accessToken)) {
     accessToken = await authApi.refreshTokens();
     localStorage.setItem('access_token', accessToken as string);
+    if (!accessToken) return null;
   }
 
   return axios.create({
