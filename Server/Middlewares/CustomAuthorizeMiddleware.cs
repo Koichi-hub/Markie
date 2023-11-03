@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Server.Attributes;
+﻿using Server.Attributes;
 using Server.Core.Enums;
-using Server.Database;
 using Server.Services.Interfaces;
 using System.Security.Principal;
 
@@ -16,7 +14,7 @@ namespace Server.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IJWTService jWTService, DatabaseContext databaseContext)
+        public async Task InvokeAsync(HttpContext context, IJWTService jWTService)
         {
             try
             {
@@ -27,20 +25,15 @@ namespace Server.Middlewares
                     return;
                 }
 
-                var accessToken = context.Request.Cookies["access_token"];
+                if (!context.Request.Headers.ContainsKey("Authorization")) throw new Exception();
+
+                var accessToken = context.Request.Headers["Authorization"][0].Split(" ")[1];
                 if (accessToken == null) throw new Exception();
 
-                var sessionGuid = jWTService.IsValidAccessToken(accessToken);
-                if (sessionGuid == null) throw new Exception();
+                var (sessionGuid, userGuid) = jWTService.IsValidAccessToken(accessToken);
+                if (sessionGuid == null || userGuid == null) throw new Exception();
 
-                var session = await databaseContext.Sessions
-                    .FirstOrDefaultAsync(s => s.Guid == Guid.Parse(sessionGuid));
-                if (session == null) throw new Exception();
-
-                var isUserExists = await databaseContext.Users.AnyAsync(u => u.Guid == session.UserGuid);
-                if (!isUserExists) throw new Exception();
-
-                var user = new GenericPrincipal(new GenericIdentity(session.UserGuid.ToString()), new string[] { RoleEnum.User.ToString() });
+                var user = new GenericPrincipal(new GenericIdentity(userGuid), new string[] { RoleEnum.User.ToString() });
                 context.User = user;
 
                 await _next(context);

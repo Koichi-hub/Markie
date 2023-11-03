@@ -35,7 +35,7 @@ namespace Server.Services
             _jWTService = jWTService;
 		}
 
-        public async Task<UserAuthorizedDto> AuthViaGoogle(string code)
+        public async Task<(UserAuthorizedDto, string)> AuthViaGoogle(string code)
         {
             var google = _oauthSettings.Google;
             var httpClient = _httpClientFactory.CreateClient();
@@ -113,22 +113,23 @@ namespace Server.Services
                 user.OAuths.Add(oauth);
             }
 
+            var accessToken = _jWTService.CreateToken(session.Guid.ToString(), user.Guid.ToString(), isAccessToken: true);
+            var refreshToken = _jWTService.CreateToken(session.Guid.ToString(), user.Guid.ToString(), isAccessToken: false);
+
             session.OAuth = oauth;
             session.User = user;
+            session.RefreshToken = refreshToken;
 
             _databaseContext.Sessions.Add(session);
             await _databaseContext.SaveChangesAsync();
 
-            var accessToken = _jWTService.CreateAccessToken(session.Guid.ToString());
-
-            return new UserAuthorizedDto 
-            {
-                AccessToken = accessToken,
-                User = _mapper.Map<UserDto>(user)
-            };
+            return (
+                new UserAuthorizedDto { AccessToken = accessToken, User = _mapper.Map<UserDto>(user) }, 
+                refreshToken
+            );
 		}
 
-        public async Task<UserAuthorizedDto> AuthViaVK(string code)
+        public async Task<(UserAuthorizedDto, string)> AuthViaVK(string code)
         {
             var vk = _oauthSettings.VK;
             var httpClient = _httpClientFactory.CreateClient();
@@ -212,19 +213,20 @@ namespace Server.Services
                 user.OAuths.Add(oauth);
             }
 
+            var accessToken = _jWTService.CreateToken(session.Guid.ToString(), user.Guid.ToString(), isAccessToken: true);
+            var refreshToken = _jWTService.CreateToken(session.Guid.ToString(), user.Guid.ToString(), isAccessToken: false);
+
             session.OAuth = oauth;
             session.User = user;
+            session.RefreshToken = refreshToken;
 
             _databaseContext.Sessions.Add(session);
             await _databaseContext.SaveChangesAsync();
 
-            var accessToken = _jWTService.CreateAccessToken(session.Guid.ToString());
-
-            return new UserAuthorizedDto
-            {
-                AccessToken = accessToken,
-                User = _mapper.Map<UserDto>(user)
-            };
+            return (
+                new UserAuthorizedDto { AccessToken = accessToken, User = _mapper.Map<UserDto>(user) },
+                refreshToken
+            );
         }
 
         public string GetGoogleAuthUri()
@@ -258,6 +260,34 @@ namespace Server.Services
             };
 
             return new Uri(QueryHelpers.AddQueryString(vk.AuthUri, parameters)).ToString();
+        }
+
+        public async Task<(string, string)> RefreshTokens(string refreshToken)
+        {
+            var (sessionGuid, userGuid) = _jWTService.IsValidAccessToken(refreshToken);
+            if (sessionGuid == null || userGuid == null) throw new Exception();
+
+            var session = await _databaseContext.Sessions.FirstOrDefaultAsync(s => s.Guid == Guid.Parse(sessionGuid));
+            if (session == null) throw new Exception();
+
+            // Если не совпадают, значит хацкер выкрал и обновил
+            if (session.RefreshToken != refreshToken)
+            {
+                var sessions = await _databaseContext.Sessions.Where(s => s.UserGuid == Guid.Parse(userGuid)).ToListAsync();
+                foreach (var s in sessions)
+                    _databaseContext.Sessions.Remove(s);
+                await _databaseContext.SaveChangesAsync();
+
+                throw new Exception();
+            }
+
+            var accessToken = _jWTService.CreateToken(sessionGuid, userGuid, isAccessToken: true);
+            var newRefreshToken = _jWTService.CreateToken(sessionGuid, userGuid, isAccessToken: false);
+
+            session.RefreshToken = newRefreshToken;
+            await _databaseContext.SaveChangesAsync();
+
+            return (accessToken, newRefreshToken);
         }
     }
 }

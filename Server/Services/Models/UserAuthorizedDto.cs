@@ -6,6 +6,7 @@ namespace Server.Services.Models
     {
         [JsonPropertyName("user")]
         public UserDto User { get; set; } = null!;
+
         [JsonPropertyName("accessToken")]
         public string AccessToken { get; set; } = null!;
     }

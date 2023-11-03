@@ -28,3 +28,12 @@ export const getVKAuthorizedUser = async (
   });
   return response.data;
 };
+
+export const refreshTokens = async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/auth/refresh');
+    return response.data;
+  } catch (error) {
+    location.href = 'http://localhost:5173';
+  }
+};

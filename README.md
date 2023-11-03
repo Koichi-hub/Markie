@@ -32,7 +32,7 @@ $ npm run dev
 ```
 > dotnet ef migrations add <MigrationName>
 
-> dotnet ef migrations update
+> dotnet ef database update
 ```
 
 #### TypeGen | C# POCO -> TypeScript types

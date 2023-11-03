@@ -17,7 +17,7 @@ namespace Server.Services
             _jWTSettings = jWTSettings.Value;
         }
 
-        public string CreateAccessToken(string sessionGuid)
+        public string CreateToken(string sessionGuid, string userGuid, bool isAccessToken)
         {
             var keyBytes = Encoding.UTF8.GetBytes(_jWTSettings.SigningKey);
             var symmetricKey = new SymmetricSecurityKey(keyBytes);
@@ -26,10 +26,13 @@ namespace Server.Services
 
             var claims = new List<Claim>()
             {
-                new Claim("sessionGuid", sessionGuid)
+                new Claim("sessionGuid", sessionGuid),
+                new Claim("userGuid", userGuid)
             };
 
-            var expirationSeconds = TimeSpan.FromSeconds(_jWTSettings.ExpirationSeconds);
+            var expirationSeconds = isAccessToken ? 
+                TimeSpan.FromHours(_jWTSettings.AccessTokenExpirationHours) :
+                TimeSpan.FromDays(_jWTSettings.RefreshTokenExpirationDays);
             var token = new JwtSecurityToken(
                 issuer: _jWTSettings.Issuer,
                 audience: _jWTSettings.Audience,
@@ -42,7 +45,7 @@ namespace Server.Services
             return rawToken;
         }
 
-        public string? IsValidAccessToken(string accessToken)
+        public (string?, string?) IsValidAccessToken(string accessToken)
         {
             var keyBytes = Encoding.UTF8.GetBytes(_jWTSettings.SigningKey);
             var symmetricKey = new SymmetricSecurityKey(keyBytes);
@@ -57,7 +60,10 @@ namespace Server.Services
             };
             handler.ValidateToken(accessToken, validations, out var securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
-            return jwtSecurityToken?.Claims.First(c => c.Type == "sessionGuid").Value;
+
+            var sessionGuid = jwtSecurityToken?.Claims.First(c => c.Type == "sessionGuid").Value;
+            var userGuid = jwtSecurityToken?.Claims.First(c => c.Type == "userGuid").Value;
+            return (sessionGuid, userGuid);
         }
     }
 }

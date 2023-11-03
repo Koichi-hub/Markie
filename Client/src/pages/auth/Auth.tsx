@@ -6,48 +6,31 @@ import { authApi } from '../../api';
 import { routes } from '../../router';
 import { useDispatch } from 'react-redux';
 import { setUser } from '../../store/appSlice';
-import { useCookies } from 'react-cookie';
-import dayjs from 'dayjs';
 
 export const Auth = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [cookies, setCookie] = useCookies();
   const [searchParams] = useSearchParams();
   const { variant } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const setCookieLocal = useCallback(
-    (key: string, value: string) => {
-      setCookie(key, value, {
-        expires: dayjs().add(7, 'day').toDate(),
-        domain: 'localhost',
-        path: '/',
-        secure: false,
-        sameSite: 'none',
-      });
-    },
-    [setCookie]
-  );
-
   const authViaGoogle = useCallback(
     async (code: string) => {
       const userAuthorized = await authApi.getGoogleAuthorizedUser(code);
-      setCookieLocal('access_token', userAuthorized.accessToken);
+      localStorage.setItem('access_token', userAuthorized.accessToken);
       dispatch(setUser(userAuthorized.user));
       navigate(routes.notes);
     },
-    [dispatch, navigate, setCookieLocal]
+    [dispatch, navigate]
   );
 
   const authViaVK = useCallback(
     async (code: string) => {
       const userAuthorized = await authApi.getVKAuthorizedUser(code);
-      setCookieLocal('access_token', userAuthorized.accessToken);
+      localStorage.setItem('access_token', userAuthorized.accessToken);
       dispatch(setUser(userAuthorized.user));
       navigate(routes.notes);
     },
-    [dispatch, navigate, setCookieLocal]
+    [dispatch, navigate]
   );
 
   const onSelectGoogleAuth = useCallback(async () => {
