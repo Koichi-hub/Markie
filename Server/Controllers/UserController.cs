@@ -37,7 +37,7 @@ namespace Server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUserByGuid()
+        public async Task<IActionResult> GetMe()
         {
             var user = await _userService.GetUserByGuid(authorizedUserGuid);
             if (user == null) return StatusCode(StatusCodes.Status404NotFound);
