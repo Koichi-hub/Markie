@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import styles from './Welcome.module.scss';
 import { RoundendButton } from '../../components/rounded-button';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../../router';
+import { delay } from '../../utils';
+import { useAppSelector } from '../../store';
 
 export const Welcome = () => {
   const navigate = useNavigate();
-  const [activeAnimation, setActiveAnimation] = useState(false);
 
-  const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+  const user = useAppSelector(state => state.app.user);
+  const isUserLoading = useAppSelector(state => state.app.isUserLoading);
+
+  const [activeAnimation, setActiveAnimation] = useState(false);
 
   useEffect(() => {
     onInit();
@@ -24,11 +28,19 @@ export const Welcome = () => {
     [navigate]
   );
 
+  const onClickNotes = useCallback(() => navigate(routes.notes), [navigate]);
+
+  const renderButton = useMemo(() => {
+    return user ? (
+      <RoundendButton text="К заметкам" onClick={onClickNotes} />
+    ) : (
+      <RoundendButton text="Авторизация" onClick={onClickAuthorization} />
+    );
+  }, [onClickAuthorization, onClickNotes, user]);
+
   return (
     <div className={styles['welcome']}>
-      <div className={styles['header']}>
-        <RoundendButton text="Авторизация" onClick={onClickAuthorization} />
-      </div>
+      <div className={styles['header']}>{!isUserLoading && renderButton}</div>
       <div className={styles['body']}>
         <div className={styles['content']}>
           <div></div>

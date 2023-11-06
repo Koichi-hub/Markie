@@ -4,31 +4,38 @@ import styles from './Auth.module.scss';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { authApi } from '../../api';
 import { routes } from '../../router';
-import { useDispatch } from 'react-redux';
-import { setUser } from '../../store/appSlice';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { authViaGoogle, authViaVK } from '../../store/appSlice';
+import { PageLoader } from '../../components/page-loader';
 
 export const Auth = () => {
   const [searchParams] = useSearchParams();
   const { variant } = useParams();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const authViaGoogle = useCallback(
+  const isUserLoading = useAppSelector(state => state.app.isUserLoading);
+
+  const onAuthViaGoogle = useCallback(
     async (code: string) => {
-      const userAuthorized = await authApi.getGoogleAuthorizedUser(code);
-      localStorage.setItem('access_token', userAuthorized.accessToken);
-      dispatch(setUser(userAuthorized.user));
-      navigate(routes.notes);
+      try {
+        await dispatch(authViaGoogle(code)).unwrap();
+        navigate(routes.notes);
+      } catch (e) {
+        navigate(`${routes.statusCode}?status_code=401`);
+      }
     },
     [dispatch, navigate]
   );
 
-  const authViaVK = useCallback(
+  const onAuthViaVK = useCallback(
     async (code: string) => {
-      const userAuthorized = await authApi.getVKAuthorizedUser(code);
-      localStorage.setItem('access_token', userAuthorized.accessToken);
-      dispatch(setUser(userAuthorized.user));
-      navigate(routes.notes);
+      try {
+        await dispatch(authViaVK(code)).unwrap();
+        navigate(routes.notes);
+      } catch (e) {
+        navigate(`${routes.statusCode}?status_code=401`);
+      }
     },
     [dispatch, navigate]
   );
@@ -49,19 +56,21 @@ export const Auth = () => {
     if (code && variant) {
       switch (variant) {
         case 'google':
-          authViaGoogle(code);
+          onAuthViaGoogle(code);
           break;
         case 'vk':
-          authViaVK(code);
+          onAuthViaVK(code);
           break;
         default:
-          navigate(routes.notFound);
+          navigate(`${routes.statusCode}?status_code=401`);
           break;
       }
     }
-  }, [authViaGoogle, authViaVK, navigate, searchParams, variant]);
+  }, [navigate, onAuthViaGoogle, onAuthViaVK, searchParams, variant]);
 
-  return (
+  return isUserLoading ? (
+    <PageLoader text="Идет загрузка данных, подождите..." />
+  ) : (
     <div className={styles['auth']}>
       <div className={styles['header']}>
         <RoundendButton text="Авторизация" focus />

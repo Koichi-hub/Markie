@@ -29,11 +29,7 @@ export const getVKAuthorizedUser = async (
   return response.data;
 };
 
-export const refreshTokens = async (): Promise<string | null> => {
-  try {
-    const response = await axios.get('http://localhost:8080/api/auth/refresh');
-    return response.data;
-  } catch (error) {
-    return null;
-  }
+export const refreshTokens = async (): Promise<string> => {
+  const response = await axios.get('http://localhost:8080/api/auth/refresh');
+  return response.data;
 };

@@ -1,15 +1,16 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Welcome } from './pages/welcome';
-import { Auth } from './pages/auth';
-import { Notes } from './pages/notes';
-import { NotFound } from './pages/not-found';
+import { AuthorizedRoute } from './AuthorizedRoute';
+import { Auth } from '../pages/auth';
+import { Notes } from '../pages/notes';
+import { StatusCode } from '../pages/status-code';
+import { Welcome } from '../pages/welcome';
 
 type Routes = {
   root: '';
   welcome: '/welcome';
   notes: '/notes';
   auth: '/auth';
-  notFound: '/not-found';
+  statusCode: '/status-code';
 };
 
 export const routes: Routes = {
@@ -17,7 +18,7 @@ export const routes: Routes = {
   welcome: '/welcome',
   notes: '/notes',
   auth: '/auth',
-  notFound: '/not-found',
+  statusCode: '/status-code',
 };
 
 export const router = createBrowserRouter([
@@ -30,8 +31,13 @@ export const router = createBrowserRouter([
     element: <Welcome />,
   },
   {
-    path: routes.notes,
-    element: <Notes />,
+    element: <AuthorizedRoute />,
+    children: [
+      {
+        path: routes.notes,
+        element: <Notes />,
+      },
+    ],
   },
   {
     path: routes.auth,
@@ -44,6 +50,6 @@ export const router = createBrowserRouter([
   },
   {
     path: '*',
-    element: <NotFound />,
+    element: <StatusCode />,
   },
 ]);

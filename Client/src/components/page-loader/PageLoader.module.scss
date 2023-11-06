@@ -1,0 +1,29 @@
+@import '#/_styles.scss';
+
+.loader-container {
+    display        : flex;
+    flex-direction : column;
+    gap            : $gap-16px;
+    align-items    : center;
+    justify-content: center;
+    height         : inherit;
+}
+
+.loader {
+    border       : 12px solid $grey-0;
+    border-top   : 12px solid $grey-80;
+    border-radius: 50%;
+    width        : 80px;
+    height       : 80px;
+    animation    : spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

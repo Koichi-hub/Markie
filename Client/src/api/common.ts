@@ -11,7 +11,6 @@ export const getAxiosInstance = async () => {
   if (!isValidAccessToken(accessToken)) {
     accessToken = await authApi.refreshTokens();
     localStorage.setItem('access_token', accessToken as string);
-    if (!accessToken) return null;
   }
 
   return axios.create({
@@ -24,10 +23,14 @@ export const getAxiosInstance = async () => {
 };
 
 const isValidAccessToken = (accessToken: string | null): boolean => {
-  if (!accessToken) return false;
+  try {
+    if (!accessToken) return false;
 
-  const payload = JSON.parse(atob(accessToken.split('.')[1]));
-  if (!payload['exp']) return false;
+    const payload = JSON.parse(atob(accessToken.split('.')[1]));
+    if (!payload['exp']) return false;
 
-  return dayjs.utc().isBefore(dayjs.utc(parseInt(payload['exp']) * 1000));
+    return dayjs.utc().isBefore(dayjs.utc(parseInt(payload['exp']) * 1000));
+  } catch (e) {
+    return false;
+  }
 };
