@@ -22,7 +22,7 @@ export const Sidebar = () => {
   const onExit = () => {};
 
   useEffect(() => {
-    if (user) {
+    if (user?.guid) {
       dispatch(fetchNotesCount({ userGuid: user?.guid }));
       dispatch(fetchNotes(user?.guid));
     }
