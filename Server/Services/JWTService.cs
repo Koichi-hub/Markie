@@ -31,7 +31,7 @@ namespace Server.Services
             };
 
             var expirationSeconds = isAccessToken ? 
-                TimeSpan.FromHours(_jWTSettings.AccessTokenExpirationHours) :
+                TimeSpan.FromMinutes(_jWTSettings.AccessTokenExpirationMinutes) :
                 TimeSpan.FromDays(_jWTSettings.RefreshTokenExpirationDays);
             var token = new JwtSecurityToken(
                 issuer: _jWTSettings.Issuer,

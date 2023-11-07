@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Server.Configuration;
 using Server.Database;
 using Server.Extensions;
@@ -20,6 +21,7 @@ namespace Server
         {
             services.Configure<OAuthSettings>(Configuration.GetSection("OAuthSettings"));
             services.Configure<JWTSettings>(Configuration.GetSection("JWTSettings"));
+            services.Configure<AdminSettings>(Configuration.GetSection("AdminSettings"));
 
             services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL")));
             services.AddHttpContextAccessor();
@@ -69,6 +71,20 @@ namespace Server
             app.UseCustomAuthorization();
 
             app.MapControllers();
+
+            if (!env.IsDevelopment())
+            {
+                var fileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "front"));
+                app.UseFileServer(new FileServerOptions
+                {
+                    FileProvider = fileProvider
+                });
+
+                app.MapFallbackToFile("index.html", new StaticFileOptions
+                {
+                    FileProvider = fileProvider
+                });
+            }
         }
     }
 }

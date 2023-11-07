@@ -285,6 +285,7 @@ namespace Server.Services
             var newRefreshToken = _jWTService.CreateToken(sessionGuid, userGuid, isAccessToken: false);
 
             session.RefreshToken = newRefreshToken;
+            _databaseContext.Sessions.Update(session);
             await _databaseContext.SaveChangesAsync();
 
             return (accessToken, newRefreshToken);

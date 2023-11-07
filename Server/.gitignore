@@ -230,3 +230,5 @@ AppPackages/
 
 appsettings.Development.json
 appsettings.Production.json
+
+front/
