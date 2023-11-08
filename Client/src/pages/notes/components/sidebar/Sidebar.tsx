@@ -9,6 +9,7 @@ import {
   setOpenAddTagToast,
 } from '../../notesSlice';
 import { useEffect } from 'react';
+import { logout } from '../../../../store/appSlice';
 
 export const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -19,7 +20,9 @@ export const Sidebar = () => {
     dispatch(setOpenAddTagToast(true));
   };
 
-  const onExit = () => {};
+  const onExit = () => {
+    dispatch(logout());
+  };
 
   useEffect(() => {
     if (user?.guid) {

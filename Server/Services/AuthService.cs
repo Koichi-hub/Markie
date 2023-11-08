@@ -290,5 +290,17 @@ namespace Server.Services
 
             return (accessToken, newRefreshToken);
         }
+
+        public async Task Logout(string refreshToken)
+        {
+            var (sessionGuid, userGuid) = _jWTService.IsValidAccessToken(refreshToken);
+            if (sessionGuid == null || userGuid == null) return;
+
+            var session = await _databaseContext.Sessions.FirstOrDefaultAsync(s => s.Guid == Guid.Parse(sessionGuid));
+            if (session == null) return;
+
+            _databaseContext.Sessions.Remove(session);
+            await _databaseContext.SaveChangesAsync();
+        }
     }
 }

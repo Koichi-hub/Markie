@@ -14,5 +14,6 @@ namespace Server.Services.Interfaces
         /// <param name="refreshToken"></param>
         /// <returns>(string, string) (accessToken, refreshToken)</returns>
         public Task<(string, string)> RefreshTokens(string refreshToken);
+        public Task Logout(string refreshToken);
     }
 }

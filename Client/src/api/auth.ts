@@ -34,3 +34,8 @@ export const refreshTokens = async (): Promise<string> => {
   const response = await axios.get(`${appBaseURL}/api/auth/refresh`);
   return response.data;
 };
+
+export const logout = async () => {
+  localStorage.removeItem('access_token');
+  await axios.get(`${appBaseURL}/api/auth/logout`);
+};

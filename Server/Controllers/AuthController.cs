@@ -86,6 +86,28 @@ namespace Server.Controllers
             }
         }
 
+        [HttpGet("logout")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                var request = _httpContextAccessor.HttpContext.Request;
+                if (!request.Cookies.ContainsKey("refresh_token")) return Ok();
+
+                var refreshToken = request.Cookies["refresh_token"];
+                if (refreshToken.IsNullOrEmpty()) return Ok();
+
+                await _authService.Logout(refreshToken);
+            }
+            finally
+            {
+                var response = _httpContextAccessor.HttpContext.Response;
+                response.Cookies.Delete("refresh_token");
+            }
+            return Ok();
+        }
+
         private void SetRefreshTokenCookie(string refreshToken)
         {
             var cookieOptions = new CookieOptions()

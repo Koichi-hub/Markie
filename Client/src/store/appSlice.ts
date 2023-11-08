@@ -49,6 +49,11 @@ export const authViaVK = createAsyncThunk<UserDto, string>(
   }
 );
 
+export const logout = createAsyncThunk('appSlice/logout', async () => {
+  await authApi.logout();
+  window.location.href = '/';
+});
+
 // reducers
 export const appSlice = createSlice({
   name: 'appSlice',
