@@ -9,6 +9,10 @@ namespace Server.Database.EntityConfiguration
         public void Configure(EntityTypeBuilder<Tag> builder)
         {
             builder.HasKey(t => t.Guid);
+            builder
+                .HasMany(t => t.Notes)
+                .WithMany(n => n.Tags)
+                .UsingEntity<TagNote>();
         }
     }
 }

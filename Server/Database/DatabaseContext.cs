@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Server.Configuration;
 using Server.Core.Entities;
 using Server.Core.Enums;
 using Server.Database.EntityConfiguration;
@@ -11,9 +13,18 @@ namespace Server.Database
         public DbSet<Note> Notes { get; set; }
         public DbSet<OAuth> OAuths { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<TagNote> TagNotes { get; set; }
         public DbSet<Session> Sessions { get; set; }
 
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
+        private readonly AdminSettings _adminSettings;
+
+        public DatabaseContext(
+            DbContextOptions<DatabaseContext> options,
+            IOptions<AdminSettings> adminSettings
+        ) : base(options) 
+        {
+            _adminSettings = adminSettings.Value;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,9 +38,9 @@ namespace Server.Database
             {
                 Guid = Guid.NewGuid(),
                 Role = RoleEnum.Admin,
-                Login = "admin",
-                Password = "password",
-                UserName = "Admin",
+                Login = _adminSettings.Login,
+                Password = _adminSettings.Password,
+                UserName = _adminSettings.UserName,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
             });

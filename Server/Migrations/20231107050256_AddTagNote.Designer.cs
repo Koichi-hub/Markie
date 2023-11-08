@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Database;
@@ -11,9 +12,11 @@ using Server.Database;
 namespace Server.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20231107050256_AddTagNote")]
+    partial class AddTagNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserGuid");
 
-                    b.ToTable("Notes", (string)null);
+                    b.ToTable("Notes");
                 });
 
             modelBuilder.Entity("Server.Core.Entities.OAuth", b =>
@@ -86,7 +89,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserGuid");
 
-                    b.ToTable("OAuths", (string)null);
+                    b.ToTable("OAuths");
                 });
 
             modelBuilder.Entity("Server.Core.Entities.Session", b =>
@@ -117,7 +120,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserGuid");
 
-                    b.ToTable("Sessions", (string)null);
+                    b.ToTable("Sessions");
                 });
 
             modelBuilder.Entity("Server.Core.Entities.Tag", b =>
@@ -137,7 +140,7 @@ namespace Server.Migrations
 
                     b.HasIndex("UserGuid");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Server.Core.Entities.TagNote", b =>
@@ -152,7 +155,7 @@ namespace Server.Migrations
 
                     b.HasIndex("TagGuid");
 
-                    b.ToTable("TagNotes", (string)null);
+                    b.ToTable("TagNotes");
                 });
 
             modelBuilder.Entity("Server.Core.Entities.User", b =>
@@ -182,7 +185,7 @@ namespace Server.Migrations
 
                     b.HasKey("Guid");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new

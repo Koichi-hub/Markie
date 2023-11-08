@@ -20,20 +20,48 @@ namespace Server.Services
 
         public async Task<IList<NoteDto>?> GetNotesByTag(Guid userGuid, Guid tagGuid)
         {
-            var tag = await _databaseContext.Tags
-                .Include(t => t.Notes)
-                .ThenInclude(n => n.Tags)
-                .FirstOrDefaultAsync(t => t.UserGuid == userGuid && t.Guid == tagGuid);
-            if (tag == null) return null;
+            var tagExists = await _databaseContext.Tags
+                .AnyAsync(t => t.UserGuid == userGuid && t.Guid == tagGuid);
+            if (!tagExists) return null;
 
-            return _mapper.Map<List<NoteDto>>(tag.Notes);
+            var notes = await _databaseContext.TagNotes
+                .Where(tn => tn.TagGuid == tagGuid)
+                .Include(tn => tn.Note)
+                .ThenInclude(n => n.Tags)
+                .Select(tn => new Note
+                {
+                    Guid = tn.Note.Guid,
+                    UserGuid = tn.Note.UserGuid,
+                    Name = tn.Note.Name,
+                    CreatedAt = tn.Note.CreatedAt,
+                    UpdatedAt = tn.Note.UpdatedAt,
+                    Tags = tn.Note.Tags
+                })
+                .OrderByDescending(n => n.UpdatedAt)
+                .AsSplitQuery()
+                .ToListAsync();
+
+            return _mapper.Map<List<NoteDto>>(notes);
         }
 
         public async Task<IList<NoteDto>?> GetNotes(Guid userGuid)
         {
             var notes = await _databaseContext.Notes
+                .Where(n => n.UserGuid == userGuid)
                 .Include(n => n.Tags)
-                .Where(n => n.UserGuid == userGuid).ToListAsync();
+                .Select(n => new Note
+                {
+                    Guid = n.Guid,
+                    UserGuid = n.UserGuid,
+                    Name = n.Name,
+                    CreatedAt = n.CreatedAt,
+                    UpdatedAt = n.UpdatedAt,
+                    Tags = n.Tags
+                })
+                .OrderByDescending(n => n.UpdatedAt)
+                .AsSplitQuery()
+                .ToListAsync();
+
             return _mapper.Map<List<NoteDto>>(notes);
         }
 
@@ -47,6 +75,7 @@ namespace Server.Services
         {
             var note = await _databaseContext.Notes
                 .Include(n => n.Tags)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(n => n.UserGuid == userGuid && n.Guid == noteGuid);
             if (note == null) return null;
 
@@ -65,7 +94,8 @@ namespace Server.Services
 
             if (createNoteDto.TagsGuids.Count > 0)
             {
-                var tags = await _databaseContext.Tags.Where(t => createNoteDto.TagsGuids.Contains(t.Guid)).ToListAsync();
+                var tags = await _databaseContext.Tags
+                    .Where(t => t.UserGuid == userGuid && createNoteDto.TagsGuids.Contains(t.Guid)).ToListAsync();
                 note.Tags.AddRange(tags);
             }
 
@@ -79,13 +109,14 @@ namespace Server.Services
         {
             var note = await _databaseContext.Notes
                 .Include(n => n.Tags)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(n => n.UserGuid == userGuid && n.Guid == noteGuid);
             if (note == null) return null;
 
             note.Name = changeNoteDto.Name;
             note.Content = changeNoteDto.Content;
 
-            var tags = await _databaseContext.Tags.Where(t => changeNoteDto.TagsGuids.Contains(t.Guid)).ToListAsync();
+            var tags = await _databaseContext.Tags.Where(t => t.UserGuid == userGuid && changeNoteDto.TagsGuids.Contains(t.Guid)).ToListAsync();
             var removeTagsList = note.Tags.Except(tags).ToList();
             var addTagsList = tags.Except(note.Tags).ToList();
             foreach (var t in addTagsList)

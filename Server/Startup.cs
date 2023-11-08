@@ -72,19 +72,16 @@ namespace Server
 
             app.MapControllers();
 
-            if (!env.IsDevelopment())
+            var fileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "front"));
+            app.UseFileServer(new FileServerOptions
             {
-                var fileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "front"));
-                app.UseFileServer(new FileServerOptions
-                {
-                    FileProvider = fileProvider
-                });
+                FileProvider = fileProvider
+            });
 
-                app.MapFallbackToFile("index.html", new StaticFileOptions
-                {
-                    FileProvider = fileProvider
-                });
-            }
+            app.MapFallbackToFile("index.html", new StaticFileOptions
+            {
+                FileProvider = fileProvider
+            });
         }
     }
 }

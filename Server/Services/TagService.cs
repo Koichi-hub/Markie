@@ -21,8 +21,11 @@ namespace Server.Services
         public async Task<IList<TagDto>?> GetTags(Guid userGuid)
         {
             var tags = await _databaseContext.Tags
-                .Include(t => t.Notes)
-                .Where(t => t.UserGuid == userGuid).ToListAsync();
+                .Include(t => t.TagNotes)
+                .Where(t => t.UserGuid == userGuid)
+                .OrderBy(t => t.Name)
+                .ToListAsync();
+
             return _mapper.Map<List<TagDto>>(tags);
         }
 
@@ -44,7 +47,7 @@ namespace Server.Services
         public async Task<TagDto?> ChangeTag(Guid userGuid, Guid tagGuid, ChangeTagDto changeTagDto)
         {
             var tag = await _databaseContext.Tags
-                .Include(t => t.Notes)
+                .Include(t => t.TagNotes)
                 .FirstOrDefaultAsync(t => t.UserGuid == userGuid && t.Guid == tagGuid);
             if (tag == null) return null;
 
@@ -71,7 +74,7 @@ namespace Server.Services
         {
             if (tagsGuids.Count == 0) return null;
 
-            var tags = await _databaseContext.Tags.Where(t => tagsGuids.Contains(t.Guid)).ToListAsync();
+            var tags = await _databaseContext.Tags.Where(t => t.UserGuid == userGuid && tagsGuids.Contains(t.Guid)).ToListAsync();
 
             _databaseContext.RemoveRange(tags);
             await _databaseContext.SaveChangesAsync();
