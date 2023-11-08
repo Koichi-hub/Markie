@@ -21,7 +21,6 @@ export type NotesState = {
   tag?: TagDto | null;
   tags?: TagDto[] | null;
   note?: NoteDto | null;
-  noteContent: string;
   notes?: NoteDto[] | null;
   openAddTagToast?: boolean;
   openAddNoteToast?: boolean;
@@ -33,7 +32,6 @@ const initialState: NotesState = {
     name: '#Все заметки',
     notesCount: 0,
   },
-  noteContent: '',
   notes: [],
   tags: [],
   openAddTagToast: false,
@@ -75,6 +73,16 @@ export const fetchTags = createAsyncThunk(
   async (userGuid: string) => {
     const tags = await tagsApi.fetchTags(userGuid);
     return tags;
+  }
+);
+
+export const fetchNote = createAsyncThunk(
+  'notesSlice/fetchNote',
+  async (noteGuid: string, thinkApi) => {
+    const store = thinkApi.getState() as RootState;
+    const userGuid = store.app.user?.guid as string;
+    const note = await notesApi.fetchNote(userGuid, noteGuid);
+    return note;
   }
 );
 
@@ -157,11 +165,8 @@ export const notesSlice = createSlice({
     setNote: (state, { payload }: PayloadAction<NoteDto>) => {
       state.note = payload;
     },
-    initNoteContent: state => {
-      state.noteContent = state.note!.content;
-    },
     setNoteContent: (state, { payload }: PayloadAction<string>) => {
-      state.noteContent = payload;
+      if (state.note) state.note.content = payload;
     },
     resetNote: state => {
       state.note = null;
@@ -202,9 +207,7 @@ export const notesSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(createTag.fulfilled, (state, action) => {
-      state.tags?.push(action.payload);
-      state.tag = action.payload;
-      state.notes = [];
+      state.tags?.unshift(action.payload);
     });
     builder.addCase(deleteTags.fulfilled, (state, action) => {
       state.tags = state.tags?.filter(
@@ -213,6 +216,9 @@ export const notesSlice = createSlice({
     });
     builder.addCase(fetchTags.fulfilled, (state, action) => {
       state.tags = action.payload;
+    });
+    builder.addCase(fetchNote.fulfilled, (state, action) => {
+      state.note = action.payload;
     });
     builder.addCase(fetchNotes.fulfilled, (state, action) => {
       state.notes = action.payload;
@@ -229,7 +235,6 @@ export const notesSlice = createSlice({
 // actions
 export const {
   setNote,
-  initNoteContent,
   setNoteContent,
   resetNote,
   setNotes,

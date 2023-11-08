@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class SynchronizedAction<T> {
-  constructor(private readonly callback: () => Promise<T>) {}
+  constructor(private readonly callback: () => Promise<T>) {
+    this.actionSync = this.closure();
+  }
 
   private action = async (): Promise<T> => {
     const result = await this.callback();
@@ -20,7 +22,7 @@ export class SynchronizedAction<T> {
     };
   };
 
-  actionSync = this.closure();
+  actionSync: () => Promise<T> | null;
 
   private updateClosure = () => (this.actionSync = this.closure());
 }

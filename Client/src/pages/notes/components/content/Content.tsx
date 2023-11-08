@@ -2,13 +2,13 @@ import styles from './Content.module.scss';
 import { NoteCard } from './components/note-card';
 import { useAppDispatch, useAppSelector } from '../../../../store';
 import { useCallback, useMemo, useState } from 'react';
-import { ChangeNoteDto, NoteDto } from '../../../../models';
+import { ChangeNoteDto } from '../../../../models';
 import { AddTag } from './components/add-tag';
 import { useClickAway } from '@uidotdev/usehooks';
 import {
   changeNoteAction,
   deleteNoteAction,
-  setNote,
+  fetchNote,
   setOpenAddNoteToast,
   setOpenAddTagToast,
   setOpenEditNoteToast,
@@ -26,7 +26,6 @@ export const Content = () => {
 
   // selectors
   const note = useAppSelector(state => state.notes.note);
-  const noteContent = useAppSelector(state => state.notes.noteContent);
   const notes = useAppSelector(state => state.notes.notes);
   const openAddTagToast = useAppSelector(state => state.notes.openAddTagToast);
   const openAddNoteToast = useAppSelector(
@@ -49,8 +48,8 @@ export const Content = () => {
 
   // events
   const onClickNoteCard = useCallback(
-    (note: NoteDto) => () => {
-      dispatch(setNote(note));
+    (noteGuid: string) => () => {
+      dispatch(fetchNote(noteGuid));
     },
     [dispatch]
   );
@@ -73,12 +72,11 @@ export const Content = () => {
   const onSaveNote = useCallback(() => {
     const changeNoteDto = {
       ...note,
-      content: noteContent,
       tagsGuids: note?.tags.map(t => t.guid),
     } as ChangeNoteDto;
 
     dispatch(changeNoteAction(changeNoteDto));
-  }, [dispatch, note, noteContent]);
+  }, [dispatch, note]);
 
   // render
   const renderNotes = useMemo(
@@ -89,7 +87,7 @@ export const Content = () => {
             <NoteCard
               key={note.guid}
               note={note}
-              onClick={onClickNoteCard(note)}
+              onClick={onClickNoteCard(note.guid)}
             />
           ))}
         </div>
@@ -97,7 +95,10 @@ export const Content = () => {
     [note, notes, onClickNoteCard]
   );
 
-  const renderNoteEditor = useMemo(() => note && <NoteEditor />, [note]);
+  const renderNoteEditor = useMemo(
+    () => note && <NoteEditor note={note} />,
+    [note]
+  );
 
   const renderToast = useMemo(() => {
     const toastActive =
@@ -124,7 +125,7 @@ export const Content = () => {
   }, [openAddNoteToast, openAddTagToast, openEditNoteToast, ref]);
 
   const renderTitle = useMemo(() => {
-    return note ? <span> {note?.name}</span> : '';
+    return note ? <span>{note?.name}</span> : '';
   }, [note]);
 
   const renderControls = useMemo(

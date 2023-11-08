@@ -23,7 +23,7 @@ export const NoteCard = ({ note, onClick }: Props) => {
   const renderTags = useMemo(() => {
     return note.tags.map(tag => (
       <div key={tag.guid} className={styles['tags-list__item']}>
-        {tag.name}
+        <span>{tag.name}</span>
       </div>
     ));
   }, [note.tags]);
@@ -35,7 +35,7 @@ export const NoteCard = ({ note, onClick }: Props) => {
           <IconButton src="assets/icons/edit.svg" onClick={onClick} />
         </div>
         <div className={styles['title']}>
-          {note?.name ?? 'название отсутствует'}
+          <span>{note?.name ?? 'название отсутствует'}</span>
         </div>
       </div>
       <div className={styles['note-card-bottom']}>

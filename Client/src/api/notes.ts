@@ -10,6 +10,15 @@ export const createNote = async (
   return response?.data;
 };
 
+export const fetchNote = async (
+  userGuid: string,
+  noteGuid: string
+): Promise<NoteDto> => {
+  const instance = await getAxiosInstance();
+  const response = await instance?.get(`${userGuid}/notes/${noteGuid}`);
+  return response?.data;
+};
+
 export const fetchNotes = async (userGuid: string): Promise<NoteDto[]> => {
   const instance = await getAxiosInstance();
   const response = await instance?.get(`${userGuid}/notes`);

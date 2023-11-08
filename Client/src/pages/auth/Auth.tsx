@@ -1,43 +1,31 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { RoundendButton } from '../../components/rounded-button';
 import styles from './Auth.module.scss';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { authApi } from '../../api';
-import { routes } from '../../router';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { authViaGoogle, authViaVK } from '../../store/appSlice';
-import { PageLoader } from '../../components/page-loader';
+import { routes } from '../../router';
 
 export const Auth = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { variant } = useParams();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const isUserLoading = useAppSelector(state => state.app.isUserLoading);
+  const user = useAppSelector(state => state.app.user);
+
+  const [code, setCode] = useState('');
+  const [authVariant, setAuthVariant] = useState('');
 
   const onAuthViaGoogle = useCallback(
-    async (code: string) => {
-      try {
-        await dispatch(authViaGoogle(code)).unwrap();
-        navigate(routes.notes);
-      } catch (e) {
-        navigate(`${routes.statusCode}?status_code=401`);
-      }
-    },
-    [dispatch, navigate]
+    (code: string) => dispatch(authViaGoogle(code)),
+    [dispatch]
   );
 
   const onAuthViaVK = useCallback(
-    async (code: string) => {
-      try {
-        await dispatch(authViaVK(code)).unwrap();
-        navigate(routes.notes);
-      } catch (e) {
-        navigate(`${routes.statusCode}?status_code=401`);
-      }
-    },
-    [dispatch, navigate]
+    (code: string) => dispatch(authViaVK(code)),
+    [dispatch]
   );
 
   const onSelectGoogleAuth = useCallback(async () => {
@@ -50,11 +38,9 @@ export const Auth = () => {
     window.location.href = uri;
   }, []);
 
-  useEffect(() => {
-    const code = searchParams.get('code');
-
-    if (code && variant) {
-      switch (variant) {
+  const onAuthUser = useCallback(() => {
+    if (code && authVariant) {
+      switch (authVariant) {
         case 'google':
           onAuthViaGoogle(code);
           break;
@@ -62,15 +48,29 @@ export const Auth = () => {
           onAuthViaVK(code);
           break;
         default:
-          navigate(`${routes.statusCode}?status_code=401`);
           break;
       }
     }
-  }, [navigate, onAuthViaGoogle, onAuthViaVK, searchParams, variant]);
+  }, [authVariant, code, onAuthViaGoogle, onAuthViaVK]);
 
-  return isUserLoading ? (
-    <PageLoader text="Идет загрузка данных, подождите..." />
-  ) : (
+  useEffect(() => {
+    const searchParamsCode = searchParams.get('code');
+    if (!code && searchParamsCode) setCode(searchParamsCode);
+  }, [code, searchParams]);
+
+  useEffect(() => {
+    if (!authVariant && variant) setAuthVariant(variant);
+  }, [authVariant, variant]);
+
+  useEffect(() => {
+    onAuthUser();
+  }, [onAuthUser]);
+
+  useEffect(() => {
+    if (user) navigate(routes.notes);
+  }, [navigate, user]);
+
+  return (
     <div className={styles['auth']}>
       <div className={styles['header']}>
         <RoundendButton text="Авторизация" focus />
