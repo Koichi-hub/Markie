@@ -357,6 +357,7 @@ deleteNoteListenerMiddleware.startListening({
 
     listenerApi.dispatch(deleteNote(note));
     listenerApi.dispatch(setTags(tags));
+    listenerApi.dispatch(decrementBaseTagNotesCount());
     listenerApi.dispatch(resetNote());
   },
 });
