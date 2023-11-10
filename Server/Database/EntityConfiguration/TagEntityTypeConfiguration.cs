@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Server.Core.Constants;
 using Server.Core.Entities;
 
 namespace Server.Database.EntityConfiguration
@@ -13,6 +14,9 @@ namespace Server.Database.EntityConfiguration
                 .HasMany(t => t.Notes)
                 .WithMany(n => n.Tags)
                 .UsingEntity<TagNote>();
+            builder
+                .Property(t => t.Name)
+                .HasMaxLength(Limits.TAG_NAME_MAXLENGTH);
         }
     }
 }

@@ -1,0 +1,24 @@
+@import '#/_styles.scss';
+
+.validated-input {
+    position: relative;
+}
+
+.input {
+    height       : 100%;
+    border       : 2px solid $grey-80;
+    border-radius: 15px;
+    padding      : 0 8px;
+
+    &_error {
+        border: 2px solid $red;
+    }
+}
+
+.error-text {
+    position : absolute;
+    left     : $padding-4px;
+    bottom   : -12px;
+    font-size: $font-size-10px;
+    color    : $red;
+}

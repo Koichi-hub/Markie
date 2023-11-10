@@ -47,17 +47,12 @@
     gap      : $gap-8px;
     flex-wrap: wrap;
 
-    &__caption {
-        display    : flex;
-        align-items: center;
-    }
-
     &__item {
         max-width    : 200px;
         overflow     : hidden;
         text-overflow: ellipsis;
         padding      : $padding-8px $padding-16px;
-        font-size    : $font-size-16px;
+        font-size    : $font-size-12px;
         white-space  : nowrap;
         border-radius: $border-radius-15px;
         color        : $white;
@@ -77,6 +72,7 @@
         justify-content: space-between;
         font-weight    : 500;
         font-size      : 14px;
+        color          : $grey-80;
         gap            : $gap-4px;
     }
 }

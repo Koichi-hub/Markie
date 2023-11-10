@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Server.Core.Constants;
 using Server.Core.Entities;
 using Server.Database;
 using Server.Services.Interfaces;
@@ -84,6 +85,9 @@ namespace Server.Services
 
         public async Task<NoteDto?> CreateNote(Guid userGuid, CreateNoteDto createNoteDto)
         {
+            var notesCount = await _databaseContext.Notes.CountAsync(n => n.UserGuid == userGuid);
+            if (notesCount == Limits.NOTES_LIMIT) throw new Exception();
+
             var note = new Note
             {
                 Guid = Guid.NewGuid(),

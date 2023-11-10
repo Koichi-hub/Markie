@@ -3,8 +3,14 @@
 .container {
     display       : flex;
     flex-direction: column;
-    gap           : $gap-16px;
+    gap           : $gap-4px;
     padding       : 20px;
+}
+
+.form {
+    display       : flex;
+    flex-direction: column;
+    gap           : $gap-16px;
 }
 
 .title {
@@ -29,4 +35,10 @@
     gap    : $gap-4px;
 
     &__list {}
+}
+
+.notes-limit {
+    padding  : $padding-8px;
+    font-size: $font-size-14px;
+    color    : $red;
 }

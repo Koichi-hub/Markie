@@ -22,6 +22,8 @@ export type NotesState = {
   tags?: TagDto[] | null;
   note?: NoteDto | null;
   notes?: NoteDto[] | null;
+  noteSaved?: boolean;
+  noteChanged?: boolean;
   openAddTagToast?: boolean;
   openAddNoteToast?: boolean;
   openEditNoteToast?: boolean;
@@ -34,6 +36,8 @@ const initialState: NotesState = {
   },
   notes: [],
   tags: [],
+  noteSaved: true,
+  noteChanged: false,
   openAddTagToast: false,
   openAddNoteToast: false,
   openEditNoteToast: false,
@@ -164,9 +168,21 @@ export const notesSlice = createSlice({
     },
     setNote: (state, { payload }: PayloadAction<NoteDto>) => {
       state.note = payload;
+      state.noteSaved = true;
+      state.noteChanged = false;
     },
     setNoteContent: (state, { payload }: PayloadAction<string>) => {
-      if (state.note) state.note.content = payload;
+      if (state.note) {
+        state.note.content = payload;
+        state.noteSaved = false;
+        state.noteChanged = true;
+      }
+    },
+    setNoteSaved: (state, { payload }: PayloadAction<boolean>) => {
+      state.noteSaved = payload;
+    },
+    setNoteChanged: (state, { payload }: PayloadAction<boolean>) => {
+      state.noteChanged = payload;
     },
     resetNote: state => {
       state.note = null;
@@ -219,6 +235,8 @@ export const notesSlice = createSlice({
     });
     builder.addCase(fetchNote.fulfilled, (state, action) => {
       state.note = action.payload;
+      state.noteSaved = true;
+      state.noteChanged = false;
     });
     builder.addCase(fetchNotes.fulfilled, (state, action) => {
       state.notes = action.payload;
@@ -236,6 +254,8 @@ export const notesSlice = createSlice({
 export const {
   setNote,
   setNoteContent,
+  setNoteSaved,
+  setNoteChanged,
   resetNote,
   setNotes,
   addNote,
@@ -318,6 +338,7 @@ changeNoteListenerMiddleware.startListening({
     const tags = await tagsApi.fetchTags(userGuid);
 
     listenerApi.dispatch(changeNote(note));
+    listenerApi.dispatch(setNoteSaved(true));
     listenerApi.dispatch(setTags(tags));
   },
 });

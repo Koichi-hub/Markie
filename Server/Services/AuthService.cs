@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Server.Configuration;
+using Server.Core.Constants;
 using Server.Core.Entities;
 using Server.Core.Enums;
 using Server.Database;
@@ -87,6 +88,19 @@ namespace Server.Services
                 .FirstOrDefaultAsync();
 
             var user = oauth?.User;
+
+            if (user != null)
+            {
+                var sessionsCount = await _databaseContext.Sessions.CountAsync(s => s.UserGuid == user.Guid);
+                if (sessionsCount == Limits.SESSIONS_LIMIT)
+                {
+                    var oldestSession = await _databaseContext.Sessions
+                        .Where(s => s.UserGuid == user.Guid)
+                        .OrderBy(s => s.CreatedAt)
+                        .FirstOrDefaultAsync();
+                    _databaseContext.Sessions.Remove(oldestSession);
+                }
+            }
 
             var session = new Session
             {
@@ -188,6 +202,19 @@ namespace Server.Services
                 .FirstOrDefaultAsync();
 
             var user = oauth?.User;
+
+            if (user != null)
+            {
+                var sessionsCount = await _databaseContext.Sessions.CountAsync(s => s.UserGuid == user.Guid);
+                if (sessionsCount == Limits.SESSIONS_LIMIT)
+                {
+                    var oldestSession = await _databaseContext.Sessions
+                        .Where(s => s.UserGuid == user.Guid)
+                        .OrderBy(s => s.CreatedAt)
+                        .FirstOrDefaultAsync();
+                    _databaseContext.Sessions.Remove(oldestSession);
+                } 
+            }
 
             var session = new Session
             {

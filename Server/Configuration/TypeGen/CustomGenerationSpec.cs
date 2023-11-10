@@ -1,4 +1,5 @@
-﻿using Server.Services.Models;
+﻿using Server.Core.Constants;
+using Server.Services.Models;
 using TypeGen.Core.SpecGeneration;
 
 namespace Server.Configuration.TypeGen
@@ -18,6 +19,7 @@ namespace Server.Configuration.TypeGen
             AddInterface<CreateTagDto>();
             AddInterface<ChangeTagDto>();
             AddInterface<ChangeUserDto>();
+            AddClass(typeof(Limits));
         }
     }
 }

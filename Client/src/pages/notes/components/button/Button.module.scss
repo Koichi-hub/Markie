@@ -1,15 +1,33 @@
 @import '#/_styles.scss';
 
-.button {
+@mixin button-styles {
     padding    : $padding-8px $padding-16px;
     font-family: $font-family-arial;
     transition : .2s;
+}
+
+.button {
+    @include button-styles;
 
     &:active {
         transform: scale(0.95);
     }
 }
 
+.button_disabled {
+    @include button-styles;
+    cursor: not-allowed;
+
+    &:active {
+        animation-name           : notAllowedAnimation;
+        animation-duration       : .3s;
+        animation-iteration-count: 1;
+        animation-timing-function: ease;
+        animation-fill-mode      : forwards;
+    }
+}
+
+// button background
 .grey-0 {
     background-color: $grey-0;
 }
@@ -21,4 +39,22 @@
 
 .white {
     background-color: $white;
+}
+
+@keyframes notAllowedAnimation {
+    0% {}
+
+    25% {
+        -webkit-transform: translateX(-5%);
+    }
+
+    50% {
+        -webkit-transform: translateX(5%);
+    }
+
+    75% {
+        -webkit-transform: translateX(0);
+    }
+
+    100% {}
 }

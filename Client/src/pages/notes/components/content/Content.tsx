@@ -26,6 +26,8 @@ export const Content = () => {
 
   // selectors
   const note = useAppSelector(state => state.notes.note);
+  const noteSaved = useAppSelector(state => state.notes.noteSaved);
+  const noteChanged = useAppSelector(state => state.notes.noteChanged);
   const notes = useAppSelector(state => state.notes.notes);
   const openAddTagToast = useAppSelector(state => state.notes.openAddTagToast);
   const openAddNoteToast = useAppSelector(
@@ -70,13 +72,15 @@ export const Content = () => {
     setOpenConfirmDeletionNoteModal(false);
 
   const onSaveNote = useCallback(() => {
+    if (!noteChanged || noteSaved) return;
+
     const changeNoteDto = {
       ...note,
       tagsGuids: note?.tags.map(t => t.guid),
     } as ChangeNoteDto;
 
     dispatch(changeNoteAction(changeNoteDto));
-  }, [dispatch, note]);
+  }, [dispatch, note, noteChanged, noteSaved]);
 
   // render
   const renderNotes = useMemo(
@@ -131,7 +135,7 @@ export const Content = () => {
   const renderControls = useMemo(
     () =>
       note && (
-        <div className={styles['buttons']}>
+        <div className={styles['controls']}>
           <Button color="grey-80" text="Сохранить" onClick={onSaveNote} />
           <IconButton
             src="/assets/icons/delete.svg"
@@ -158,11 +162,28 @@ export const Content = () => {
     ]
   );
 
+  const renderNoteStatus = useMemo(() => {
+    if (note && noteChanged) {
+      return (
+        <div
+          className={[
+            styles['status'],
+            !noteSaved && styles['status_dungeor'],
+          ].join(' ')}>
+          {noteSaved ? 'Сохранено' : 'Не сохранено'}
+        </div>
+      );
+    }
+  }, [note, noteChanged, noteSaved]);
+
   return (
     <div className={styles['content']}>
       <div className={styles['header']}>
         <div className={styles['title']}>{renderTitle}</div>
-        {renderControls}
+        <div className={styles['controls-container']}>
+          {renderNoteStatus}
+          {renderControls}
+        </div>
       </div>
       {renderNotes}
       {renderNoteEditor}

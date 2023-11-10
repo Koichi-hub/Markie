@@ -47,7 +47,22 @@
     text-overflow: ellipsis;
 }
 
-.buttons {
+.controls-container {
+    display: flex;
+    gap    : $gap-16px;
+}
+
+.status {
+    display    : flex;
+    align-items: center;
+    color      : $grey-80;
+
+    &_dungeor {
+        color: $red;
+    }
+}
+
+.controls {
     display    : flex;
     align-items: center;
     gap        : $gap-8px;

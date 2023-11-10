@@ -15,16 +15,18 @@ type Props = {
   text?: string;
   color?: Color;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
-export const Button = ({ text, color, onClick }: Props) => {
-  const className = useMemo(
-    () => [styles.button, color ? colorClass[color] : ''].join(' '),
-    [color]
-  );
+export const Button = ({ text, color, onClick, disabled }: Props) => {
+  const className = useMemo(() => {
+    const classNames = [disabled ? styles['button_disabled'] : styles.button];
+    if (color) classNames.push(colorClass[color]);
+    return classNames.join(' ');
+  }, [color, disabled]);
 
   return (
-    <button onClick={onClick} className={className}>
+    <button onClick={onClick} className={className} disabled={disabled}>
       {text}
     </button>
   );

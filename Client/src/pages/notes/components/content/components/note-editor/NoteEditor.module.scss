@@ -10,8 +10,9 @@
 }
 
 .src-text-container {
-    height: 100%;
-    width : 100%;
+    height  : 100%;
+    width   : 100%;
+    position: relative;
 
     .src-text {
         height    : 100%;
@@ -23,6 +24,26 @@
         outline   : none;
         @include scrollbar;
         scrollbar-color: $grey-80 $white;
+    }
+
+    .src-text-length {
+        position   : absolute;
+        bottom     : 0;
+        right      : 0;
+        opacity    : .8;
+        background : $grey-80;
+        color      : $white;
+        padding    : $padding-4px;
+        font-size  : $font-size-14px;
+        user-select: none;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        &_limit {
+            background: $red;
+        }
     }
 }
 

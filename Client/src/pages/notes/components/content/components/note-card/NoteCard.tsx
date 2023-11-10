@@ -40,10 +40,7 @@ export const NoteCard = ({ note, onClick }: Props) => {
       </div>
       <div className={styles['note-card-bottom']}>
         <div className={styles['tags-list-container']}>
-          <div className={styles['tags-list']}>
-            <div className={styles['tags-list__caption']}>Теги: </div>
-            {renderTags}
-          </div>
+          <div className={styles['tags-list']}>{renderTags}</div>
         </div>
         <div className={styles['date']}>
           <div className={styles['date-item']}>

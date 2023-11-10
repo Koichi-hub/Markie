@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Server.Core.Constants;
 using Server.Core.Entities;
 using Server.Database;
 using Server.Services.Interfaces;
@@ -31,6 +32,9 @@ namespace Server.Services
 
         public async Task<TagDto?> CreateTag(Guid userGuid, CreateTagDto createTagDto)
         {
+            var tagsCount = await _databaseContext.Tags.CountAsync(t => t.UserGuid == userGuid);
+            if (tagsCount == Limits.TAGS_LIMIT) throw new Exception();
+
             var tag = new Tag
             {
                 Guid = Guid.NewGuid(),

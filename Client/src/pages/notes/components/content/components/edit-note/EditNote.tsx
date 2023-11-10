@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../../../../store';
 import { TagsList } from '../tags-list';
 import styles from './EditNote.module.scss';
-import { ChangeNoteDto, TagDto } from '../../../../../../models';
+import { ChangeNoteDto, Limits, TagDto } from '../../../../../../models';
 import { Button } from '../../../button';
 import { changeNoteAction, setOpenEditNoteToast } from '../../../../notesSlice';
-import { Input } from '../../../input';
+import { ValidatedInput } from '../../../validated-input';
 
 export const EditNote = () => {
   const dispatch = useAppDispatch();
@@ -14,7 +14,36 @@ export const EditNote = () => {
   const tags = useAppSelector(state => state.notes.tags);
 
   const [noteName, setNoteName] = useState('');
+  const [noteNameError, setNoteNameError] = useState(false);
+  const [noteNameErrorText, setNoteNameErrorText] = useState('');
   const [selectedTags, setSelectedTags] = useState([] as TagDto[]);
+
+  const validateNoteName = useCallback((value: string) => {
+    if (!value) {
+      setNoteNameError(true);
+      setNoteNameErrorText('поле должно быть заполнено');
+      return false;
+    } else if (value.length > Limits.nOTE_NAME_MAXLENGTH) {
+      setNoteNameError(true);
+      setNoteNameErrorText(
+        `длина строки должна быть не больше ${Limits.nOTE_NAME_MAXLENGTH}`
+      );
+      return false;
+    }
+
+    setNoteNameError(false);
+    setNoteNameErrorText('');
+    return true;
+  }, []);
+
+  const isValidInput = useCallback(() => {
+    return validateNoteName(noteName);
+  }, [noteName, validateNoteName]);
+
+  const onChangeNoteName = (value: string) => {
+    validateNoteName(value);
+    setNoteName(value);
+  };
 
   const onSelectTag = useCallback(
     (tag: TagDto) => {
@@ -28,6 +57,8 @@ export const EditNote = () => {
   );
 
   const onSave = useCallback(() => {
+    if (!isValidInput()) return;
+
     const changeNoteDto = {
       ...note,
       name: noteName,
@@ -35,7 +66,7 @@ export const EditNote = () => {
     } as ChangeNoteDto;
 
     dispatch(changeNoteAction(changeNoteDto));
-  }, [dispatch, note, noteName, selectedTags]);
+  }, [dispatch, isValidInput, note, noteName, selectedTags]);
 
   const onClose = useCallback(
     () => dispatch(setOpenEditNoteToast(false)),
@@ -53,8 +84,18 @@ export const EditNote = () => {
     <div className={styles['container']}>
       <div className={styles['controls']}>
         <span className={styles['title']}>Название заметки:</span>
-        <Input value={noteName} onChange={setNoteName} />
-        <Button text="Сохранить" color="grey-80" onClick={onSave} />
+        <ValidatedInput
+          value={noteName}
+          onChange={onChangeNoteName}
+          error={noteNameError}
+          errorText={noteNameErrorText}
+        />
+        <Button
+          text="Сохранить"
+          color="grey-80"
+          onClick={onSave}
+          disabled={noteNameError}
+        />
         <Button text="Закрыть" color="grey-80" onClick={onClose} />
       </div>
       <div className={styles['tags']}>
