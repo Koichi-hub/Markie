@@ -12,6 +12,8 @@ RUN dotnet restore
 COPY Server/* ./
 
 RUN dotnet publish -c release --no-restore
+RUN dotnet tool install --local dotnet-typegen --version 3.1.0
+RUN dotnet dotnet-typegen -v generate
 
 ##########################
 ###### Client Build ######
