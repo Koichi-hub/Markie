@@ -28,7 +28,7 @@ COPY Client/package-lock.json ./
 RUN npm i
 
 COPY Client/* ./
-COPY --from=backend /app/Client/src/models/* ./src/models/
+COPY --from=backend /app/Client/src/models ./src/models
 
 RUN npm run build
 

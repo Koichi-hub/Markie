@@ -1,6 +1,5 @@
 {
   "generationSpecs": [ "CustomGenerationSpec" ],
-  "buildProject": true,
   "clearOutputDirectory": true,
   "outputPath": "..\\Client\\src\\models",
   "singleQuotes": true,
