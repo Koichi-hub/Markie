@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  markie:
+    container_name: 'markie_container'
+    image: 'markie'
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - "80:80"
+    depends_on:
+     - "postgres"
+    networks:
+      - markie-network
+
+  postgres:
+    container_name: 'postgres_container'
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: balonka
+    networks:
+      - markie-network
+
+networks:
+  markie-network:
+    driver: bridge
