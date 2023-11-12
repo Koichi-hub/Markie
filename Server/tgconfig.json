@@ -1,7 +1,7 @@
 {
   "generationSpecs": [ "CustomGenerationSpec" ],
   "clearOutputDirectory": true,
-  "outputPath": "..\\Client\\src\\models",
+  "outputPath": "../Client/src/models",
   "singleQuotes": true,
   "tabLength": 2,
   "createIndexFile": true,

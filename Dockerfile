@@ -9,11 +9,11 @@ COPY Server/*.sln ./
 COPY Server/*.csproj ./
 RUN dotnet restore
 
-COPY Server/* ./
+COPY Server/ ./
 
 RUN dotnet publish -c release --no-restore
 RUN dotnet tool install --local dotnet-typegen --version 3.1.0
-RUN dotnet dotnet-typegen -v generate
+RUN dotnet dotnet-typegen generate
 
 ##########################
 ###### Client Build ######
@@ -27,7 +27,7 @@ COPY Client/package-lock.json ./
 
 RUN npm i
 
-COPY Client/* ./
+COPY Client/ ./
 COPY --from=backend /app/Client/src/models ./src/models
 
 RUN npm run build
@@ -37,6 +37,6 @@ RUN npm run build
 ##########################
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
-COPY --from=backend /app/Server/bin/Release/net6.0/publish/* ./
-COPY --from=frontend /app/Client/dist/* ./front/
+COPY --from=backend /app/Server/bin/Release/net6.0/publish/ ./
+COPY --from=frontend /app/Client/dist/ ./front/
 ENTRYPOINT ["dotnet", "Server.dll"]
