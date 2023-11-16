@@ -10,7 +10,8 @@ services:
     ports:
      - "80:80"
     depends_on:
-     - "postgres"
+      "postgres":
+        condition: service_healthy
     networks:
       - markie-network
 
@@ -19,9 +20,19 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: balonka
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - markie-network
+    volumes:
+      - postgres:/var/lib/postgresql/data 
 
 networks:
   markie-network:
     driver: bridge
+
+volumes:
+  postgres:
